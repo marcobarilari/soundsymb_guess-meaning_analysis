@@ -145,6 +145,8 @@ EBrotB$pseudoID[which(EBrotB$pseudoID == "19820723cics")] = "19820723CICS"
 
 EBrotB$pseudoID[which(EBrotB$pseudoID == "19690929dadi")] = "19690929DADI"
 
+EBrotB$group[which(EBrotB$pseudoID == "19861221LIMZ")] = "SC"
+
 unique(EBrotB$pseudoID)
 
 # check nb of trilas per participant
