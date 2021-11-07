@@ -1,7 +1,7 @@
 library('tidyverse')
 library('data.table')
 
-path_source <- '/Users/barilari/Desktop/GuessMeaning_final-data/reshape/matlab'
+path_source <- '/Volumes/GoogleDrive/.shortcut-targets-by-id/1IN8WlMOMmKzHIuD1QgPCA_Go9KpiWozm/Guess_Meaning_Experiment(Roberto,Marco,Christian)/data/reshape/matlab_reshape'
 
 allfiles <- list.files(path_source, pattern = ".tsv")
 
@@ -29,6 +29,20 @@ raw_allMatlab$pseudoID[which(raw_allMatlab$pseudoID == '19810809____')] = '19810
 raw_allMatlab$pseudoID[which(raw_allMatlab$pseudoID == '19930320____')] = '19930320GOSC'
 raw_allMatlab$pseudoID[which(raw_allMatlab$pseudoID == '19920717____')] = '19920717LOMN'
 raw_allMatlab$pseudoID[which(raw_allMatlab$pseudoID == '19851030____')] = '19851030GBGL'
+raw_allMatlab$pseudoID[which(raw_allMatlab$pseudoID == '2911987LCMR')] = '19870129LCMR'
+
+# discard unmatched subjects
+
+# 19780909ANMN
+# 19890803ABBN
+# 19920215AGMC
+# 19930320GOSC
+
+raw_allMatlab <- raw_allMatlab %>%
+  filter(!pseudoID  %in% c("19780909ANMN",
+                           "19890803ABBN",
+                           "19920215AGMC",
+                           "19930320GOSC")) 
 
 # check nb of trilas per participant
 trialCount_raw_allMatlab <- raw_allMatlab %>% 
@@ -36,7 +50,9 @@ trialCount_raw_allMatlab <- raw_allMatlab %>%
   count() %>% 
   pivot_wider(names_from = category, values_from = n)
 
+print(trialCount_raw_allMatlab, n = Inf)
+
 write.table(raw_allMatlab, 
-            '/Users/barilari/Desktop/GuessMeaning_final-data/raw/raw_allMatlab.tsv',
+            '/Volumes/GoogleDrive/.shortcut-targets-by-id/1IN8WlMOMmKzHIuD1QgPCA_Go9KpiWozm/Guess_Meaning_Experiment(Roberto,Marco,Christian)/data/raw/raw_allMatlab.tsv',
             sep = '\t',
             row.names=FALSE)
