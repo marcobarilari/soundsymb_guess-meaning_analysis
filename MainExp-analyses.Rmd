@@ -12,13 +12,23 @@ From the data, "distractor trials" are discarded and not considered for further 
 * All Distractor trials were removed (4186 values)
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE)
+# Load and install (if missing) the recquired packages
+list.of.packages <- c("tidyverse", 
+                      "knitr", 
+                      "reshape2", 
+                      "lme4",
+                      "nlme",
+                      "car")
+new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
+if(length(new.packages)) install.packages(new.packages)
 
-library(tidyverse)
-library(nlme)
-library(lme4)
-setwd("~/Documents/R/bottini")
+lapply(list.of.packages, library, character.only = TRUE)
 
+# set script folder as working dir
+setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
+
+# set to true to show the code chunk
+knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ### Load processed and merged data
@@ -48,7 +58,7 @@ The header column is organized as follows:
 
 ```{r}
 
-allData<-read.csv("allData.csv", header = TRUE)
+allData<-read.csv("data/allData.csv", header = TRUE)
 
 ```
 
@@ -167,13 +177,24 @@ ggplot(data = categoryAccuracy_tidy,
 
 ```{r}
 
-nativeResult = glmer(nativeAccuracy ~ category + group + category*group +
+nativeResult <- glmer(nativeAccuracy ~ category + group + category*group +
         (1 | pseudoid) + (1 | language:stimulus), 
-      data=allData,
+      data = allData,
       family = binomial,
-      control=glmerControl(optimizer="bobyqa"))
+      control = glmerControl(optimizer="bobyqa"))
 
 summary(nativeResult)
+
+Anova(nativeResult)
+
+# calculate odd ratio and confidence intervals
+se <- sqrt(diag(vcov(nativeResult)))
+tab <- cbind(Est = fixef(nativeResult),
+             LL = fixef(nativeResult) - 1.96 * se,
+             UL = fixef(nativeResult) + 1.96 * se)
+
+# print odd-ratio and confidence interval
+print(exp(tab[2:4,]), digits=3)
 
 ```
 
@@ -190,6 +211,14 @@ cat1 = glmer(nativeAccuracy ~ group +
       control=glmerControl(optimizer="bobyqa"))
 
 summary(cat1)
+
+Anova(cat1)
+
+catOne_EB <- subset(allData, category == 1 & group == 'EB')
+binom.test(sum(catOne_EB$grade), nrow(catOne_EB), p = .5)
+
+catOne_SC <- subset(allData, category == 1 & group == 'SC')
+binom.test(sum(catOne_SC$grade), nrow(catOne_SC), p = .5)
 
 ```
 
