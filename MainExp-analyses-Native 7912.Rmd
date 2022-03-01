@@ -58,7 +58,7 @@ The header column is organized as follows:
 
 ```{r}
 
-allData<-read.csv("data/allData.csv", header = TRUE)
+allData<-read.csv("data/allData7912.csv", header = TRUE)
 
 ```
 
