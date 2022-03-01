@@ -1,5 +1,5 @@
 ---
-title: "Semantic Processing in SC and EB - Native accuracy"
+title: "Semantic Processing in SC and EB - Analysis for 7912 words after excluding opposite meaning words"
 author: "Minah Chang"
 date: "1 March, 2022"
 output: html_document
@@ -54,7 +54,7 @@ The header column is organized as follows:
 * 10. response
 * 11. grade (1 if correct, 0 if incorrect)
 
-*Native accuracy: given that some words in specific native languages groups can "sound" with the opposite meaning as presented in Tzeng (2017), we recompute the accuracy for those stimuli that in our prestudy were mapped systematically to the opposite meaning. For these subset of stimuli, we consider the response correct if it does not match the original meaning and incorrect if it does.
+*Native accuracy: given that some words in specific native languages groups can "sound" with the opposite meaning as presented in Tzeng (2017). In this analysis, these stimuli of opposite meaning words are excluded, leaving a total of 7912 stimuli instead of 12512 (4600 values have been removed).
 
 ```{r}
 
@@ -75,8 +75,6 @@ allData %>%
 ```
 
 ### Analysis
-
-*We chose mixed effect logistic regression over tradional statics (e.g., ANOVA) because they represent all source of variance and are better to modeling binomial categorical responses.
 
 ### Compute the raw accuracy
 
