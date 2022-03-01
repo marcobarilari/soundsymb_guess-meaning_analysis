@@ -25,7 +25,8 @@ if(length(new.packages)) install.packages(new.packages)
 lapply(list.of.packages, library, character.only = TRUE)
 
 # set script folder as working dir
-setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
+setwd("~/Documents/R/bottini")
+#setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
 
 # set to true to show the code chunk
 knitr::opts_chunk$set(echo = TRUE)
@@ -654,17 +655,27 @@ binom.test(sum(near_SC$grade), nrow(near_SC), p = .5)
 
 adjAccuracy_tidy <- allData %>%
   group_by(group, meaning) %>%
-  summarize(rawAccuracy = mean(rawAccuracy), nativeAccuracy = mean(nativeAccuracy), 
+  summarize(rawAccuracy_mean = mean(rawAccuracy), nativeAccuracy_mean = mean(nativeAccuracy), 
+            rawAccuracy_sd = sd(rawAccuracy), nativeAccuracy_sd = sd(nativeAccuracy),
+            n = n(),
+            rawAccuracy_se = rawAccuracy_sd / sqrt(n), nativeAccuracy_se = nativeAccuracy_sd / sqrt(n),
             .groups = 'keep')
+print(categoryAccuracy_tidy)
 
 ggplot(data = adjAccuracy_tidy, 
-       aes(x = as.factor(meaning), y = nativeAccuracy, fill = group)) +
+       aes(x = as.factor(meaning), y = nativeAccuracy_mean, fill = group)) +
   geom_bar(stat="identity", position=position_dodge()) +
   theme_classic() +
   scale_fill_manual(values=c('grey52','darkorange1'), labels=c('Blind', 'Sighted')) +
   scale_y_continuous(limits=c(0, 0.85), breaks=seq(0, 0.85, 0.1), expand = c(0,0)) +
   scale_x_discrete(limits=c("big", "small", "bright", "dark", "loud", "quiet", "fast", "slow", "moving", "still", "down", "up", "far", "near"),
-                   labels = c("big", "small", "bright", "dark", "loud", "quiet", "fast", "slow", "moving", "still", "down", "up", "far", "near")) + 
+                   labels = c("big", "small", "bright", "dark", "loud", "quiet", "fast", "slow", "moving", "still", "down", "up", "far", "near")) +
+  
+    geom_errorbar(aes(ymin = nativeAccuracy_mean - nativeAccuracy_se,
+                    ymax = nativeAccuracy_mean + nativeAccuracy_se),
+                width = .08,
+                position = position_dodge(.9)) +
+  
   labs(x="Adjectives", y="Accuracy") +
   ggtitle("Native Accuracy") +
   theme(
