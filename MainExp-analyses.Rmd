@@ -234,6 +234,14 @@ cat3 = glmer(nativeAccuracy ~ group +
 
 summary(cat3)
 
+Anova(cat3)
+
+catThree_EB <- subset(allData, category == 3 & group == 'EB')
+binom.test(sum(catThree_EB$grade), nrow(catThree_EB), p = .5)
+
+catThree_SC <- subset(allData, category == 3 & group == 'SC')
+binom.test(sum(catThree_SC$grade), nrow(catThree_SC), p = .5)
+
 ```
 
 ### Category 4: loudness
@@ -247,6 +255,14 @@ cat4 = glmer(nativeAccuracy ~ group +
       control=glmerControl(optimizer="bobyqa"))
 
 summary(cat4)
+
+Anova(cat4)
+
+catFour_EB <- subset(allData, category == 4 & group == 'EB')
+binom.test(sum(catFour_EB$grade), nrow(catFour_EB), p = .5)
+
+catFour_SC <- subset(allData, category == 4 & group == 'SC')
+binom.test(sum(catFour_SC$grade), nrow(catFour_SC), p = .5)
 
 ```
 
@@ -262,6 +278,14 @@ cat6 = glmer(nativeAccuracy ~ group +
 
 summary(cat6)
 
+Anova(cat6)
+
+catSix_EB <- subset(allData, category == 6 & group == 'EB')
+binom.test(sum(catSix_EB$grade), nrow(catSix_EB), p = .5)
+
+catSix_SC <- subset(allData, category == 6 & group == 'SC')
+binom.test(sum(catSix_SC$grade), nrow(catSix_SC), p = .5)
+
 ```
 
 ### Category 7: movement
@@ -275,6 +299,14 @@ cat7 = glmer(nativeAccuracy ~ group +
       control=glmerControl(optimizer="bobyqa"))
 
 summary(cat7)
+
+Anova(cat7)
+
+catSeven_EB <- subset(allData, category == 7 & group == 'EB')
+binom.test(sum(catSeven_EB$grade), nrow(catSeven_EB), p = .5)
+
+catSeven_SC <- subset(allData, category == 7 & group == 'SC')
+binom.test(sum(catSeven_SC$grade), nrow(catSeven_SC), p = .5)
 
 ```
 
@@ -290,6 +322,14 @@ cat8 = glmer(nativeAccuracy ~ group +
 
 summary(cat8)
 
+Anova(cat8)
+
+catEight_EB <- subset(allData, category == 8 & group == 'EB')
+binom.test(sum(catEight_EB$grade), nrow(catEight_EB), p = .5)
+
+catEight_SC <- subset(allData, category == 8 & group == 'SC')
+binom.test(sum(catEight_SC$grade), nrow(catEight_SC), p = .5)
+
 ```
 
 ### Category 9: distance
@@ -303,6 +343,14 @@ cat9 = glmer(nativeAccuracy ~ group +
       control=glmerControl(optimizer="bobyqa"))
 
 summary(cat9)
+
+Anova(cat9)
+
+catNine_EB <- subset(allData, category == 8 & group == 'EB')
+binom.test(sum(catNine_EB$grade), nrow(catNine_EB), p = .5)
+
+catNine_SC <- subset(allData, category == 8 & group == 'SC')
+binom.test(sum(catNine_SC$grade), nrow(catNine_SC), p = .5)
 
 ```
 
@@ -318,7 +366,16 @@ big = glmer(nativeAccuracy ~ group +
 
 summary(big)
 
+Anova(big)
+
+big_EB <- subset(allData, meaning == "big" & group == 'EB')
+binom.test(sum(big_EB$grade), nrow(big_EB), p = .5)
+
+big_SC <- subset(allData, meaning == "big" & group == 'SC')
+binom.test(sum(big_EB$grade), nrow(big_EB), p = .5)
+
 ```
+
 
 ```{r}
 
@@ -330,7 +387,17 @@ small = glmer(nativeAccuracy ~ group +
 
 summary(small)
 
+Anova(small)
+
+small_EB <- subset(allData, meaning == "small" & group == 'EB')
+binom.test(sum(small_EB$grade), nrow(small_EB), p = .5)
+
+small_SC <- subset(allData, meaning == "small" & group == 'SC')
+binom.test(sum(small_EB$grade), nrow(small_EB), p = .5)
+
 ```
+
+
 ```{r}
 
 bright = glmer(nativeAccuracy ~ group +
@@ -341,7 +408,17 @@ bright = glmer(nativeAccuracy ~ group +
 
 summary(bright)
 
+Anova(bright)
+
+bright_EB <- subset(allData, meaning == "bright" & group == 'EB')
+binom.test(sum(bright_EB$grade), nrow(bright_EB), p = .5)
+
+bright_SC <- subset(allData, meaning == "bright" & group == 'SC')
+binom.test(sum(bright_SC$grade), nrow(bright_SC), p = .5)
+
 ```
+
+
 ```{r}
 
 dark = glmer(nativeAccuracy ~ group +
@@ -352,7 +429,17 @@ dark = glmer(nativeAccuracy ~ group +
 
 summary(dark)
 
+Anova(dark)
+
+dark_EB <- subset(allData, meaning == "dark" & group == 'EB')
+binom.test(sum(dark_EB$grade), nrow(dark_EB), p = .5)
+
+dark_SC <- subset(allData, meaning == "dark" & group == 'SC')
+binom.test(sum(dark_SC$grade), nrow(dark_SC), p = .5)
+
 ```
+
+
 ```{r}
 
 loud = glmer(nativeAccuracy ~ group +
@@ -363,7 +450,17 @@ loud = glmer(nativeAccuracy ~ group +
 
 summary(loud)
 
+Anova(loud)
+
+loud_EB <- subset(allData, meaning == "loud" & group == 'EB')
+binom.test(sum(loud_EB$grade), nrow(loud_EB), p = .5)
+
+loud_SC <- subset(allData, meaning == "loud" & group == 'SC')
+binom.test(sum(loud_SC$grade), nrow(loud_SC), p = .5)
+
 ```
+
+
 ```{r}
 
 quiet = glmer(nativeAccuracy ~ group +
@@ -374,7 +471,17 @@ quiet = glmer(nativeAccuracy ~ group +
 
 summary(quiet)
 
+Anova(quiet)
+
+quiet_EB <- subset(allData, meaning == "quiet" & group == 'EB')
+binom.test(sum(quiet_EB$grade), nrow(quiet_EB), p = .5)
+
+quiet_SC <- subset(allData, meaning == "quiet" & group == 'SC')
+binom.test(sum(quiet_SC$grade), nrow(quiet_SC), p = .5)
+
 ```
+
+
 ```{r}
 
 fast = glmer(nativeAccuracy ~ group +
@@ -385,7 +492,17 @@ fast = glmer(nativeAccuracy ~ group +
 
 summary(fast)
 
+Anova(fast)
+
+fast_EB <- subset(allData, meaning == "fast" & group == 'EB')
+binom.test(sum(fast_EB$grade), nrow(fast_EB), p = .5)
+
+fast_SC <- subset(allData, meaning == "fast" & group == 'SC')
+binom.test(sum(fast_SC$grade), nrow(fast_SC), p = .5)
+
 ```
+
+
 ```{r}
 
 slow = glmer(nativeAccuracy ~ group +
@@ -396,7 +513,17 @@ slow = glmer(nativeAccuracy ~ group +
 
 summary(slow)
 
+Anova(slow)
+
+slow_EB <- subset(allData, meaning == "slow" & group == 'EB')
+binom.test(sum(slow_EB$grade), nrow(slow_EB), p = .5)
+
+slow_SC <- subset(allData, meaning == "slow" & group == 'SC')
+binom.test(sum(slow_SC$grade), nrow(slow_SC), p = .5)
+
 ```
+
+
 ```{r}
 
 moving = glmer(nativeAccuracy ~ group +
@@ -407,7 +534,17 @@ moving = glmer(nativeAccuracy ~ group +
 
 summary(moving)
 
+Anova(moving)
+
+moving_EB <- subset(allData, meaning == "moving" & group == 'EB')
+binom.test(sum(moving_EB$grade), nrow(moving_EB), p = .5)
+
+moving_SC <- subset(allData, meaning == "moving" & group == 'SC')
+binom.test(sum(moving_SC$grade), nrow(moving_SC), p = .5)
+
 ```
+
+
 ```{r}
 
 still = glmer(nativeAccuracy ~ group +
@@ -418,7 +555,17 @@ still = glmer(nativeAccuracy ~ group +
 
 summary(still)
 
+Anova(still)
+
+still_EB <- subset(allData, meaning == "still" & group == 'EB')
+binom.test(sum(still_EB$grade), nrow(still_EB), p = .5)
+
+still_SC <- subset(allData, meaning == "still" & group == 'SC')
+binom.test(sum(still_SC$grade), nrow(still_SC), p = .5)
+
 ```
+
+
 ```{r}
 
 down = glmer(nativeAccuracy ~ group +
@@ -429,7 +576,17 @@ down = glmer(nativeAccuracy ~ group +
 
 summary(down)
 
+Anova(down)
+
+down_EB <- subset(allData, meaning == "down" & group == 'EB')
+binom.test(sum(down_EB$grade), nrow(down_EB), p = .5)
+
+down_SC <- subset(allData, meaning == "down" & group == 'SC')
+binom.test(sum(down_SC$grade), nrow(down_SC), p = .5)
+
 ```
+
+
 ```{r}
 
 up = glmer(nativeAccuracy ~ group +
@@ -440,7 +597,17 @@ up = glmer(nativeAccuracy ~ group +
 
 summary(up)
 
+Anova(up)
+
+up_EB <- subset(allData, meaning == "up" & group == 'EB')
+binom.test(sum(up_EB$grade), nrow(up_EB), p = .5)
+
+up_SC <- subset(allData, meaning == "up" & group == 'SC')
+binom.test(sum(up_SC$grade), nrow(up_SC), p = .5)
+
 ```
+
+
 ```{r}
 
 far = glmer(nativeAccuracy ~ group +
@@ -451,7 +618,17 @@ far = glmer(nativeAccuracy ~ group +
 
 summary(far)
 
+Anova(far)
+
+far_EB <- subset(allData, meaning == "far" & group == 'EB')
+binom.test(sum(far_EB$grade), nrow(far_EB), p = .5)
+
+far_SC <- subset(allData, meaning == "far" & group == 'SC')
+binom.test(sum(far_SC$grade), nrow(far_SC), p = .5)
+
 ```
+
+
 ```{r}
 
 near = glmer(nativeAccuracy ~ group +
@@ -462,7 +639,16 @@ near = glmer(nativeAccuracy ~ group +
 
 summary(near)
 
+Anova(near)
+
+near_EB <- subset(allData, meaning == "near" & group == 'EB')
+binom.test(sum(near_EB$grade), nrow(near_EB), p = .5)
+
+near_SC <- subset(allData, meaning == "near" & group == 'SC')
+binom.test(sum(near_SC$grade), nrow(near_SC), p = .5)
+
 ```
+
 
 ```{r}
 
