@@ -346,10 +346,10 @@ summary(cat9)
 
 Anova(cat9)
 
-catNine_EB <- subset(allData, category == 8 & group == 'EB')
+catNine_EB <- subset(allData, category == 9 & group == 'EB')
 binom.test(sum(catNine_EB$grade), nrow(catNine_EB), p = .5)
 
-catNine_SC <- subset(allData, category == 8 & group == 'SC')
+catNine_SC <- subset(allData, category == 9 & group == 'SC')
 binom.test(sum(catNine_SC$grade), nrow(catNine_SC), p = .5)
 
 ```
