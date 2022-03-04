@@ -1,7 +1,7 @@
 ---
 title: "Experimental modalities - Gorilla versus Matlab"
 author: "Minah Chang"
-date: "1 March, 2022"
+date: "4 March, 2022"
 output: html_document
 ---
 
@@ -62,18 +62,6 @@ allData<-read.csv("data/allData.csv", header = TRUE)
 
 ```
 
-Check that all the participants have the same number of responses per category
-
-```{r}
-
-allData %>% 
-  group_by(pseudoid, session, group, category) %>% 
-  count() %>% 
-  pivot_wider(names_from = category, values_from = n) %>% 
-  print(n = 46)
-
-```
-
 ### Analysis
 
 ### Compute the raw and native accuracy for Gorilla and Matlab.
@@ -82,19 +70,9 @@ allData %>%
 
 allData$rawAccuracy <- as.integer(allData$response == allData$meaning)
 
-allData %>%
-  group_by(session) %>%
-  summarize(rawAccuracy = mean(rawAccuracy), 
-            .groups = 'keep')
-
 allData$nativeAccuracy <- ifelse(allData$value == 'goodop', 
                                  abs(allData$rawAccuracy - 1), 
                                  allData$rawAccuracy + 0)
-
-allData %>%
-  group_by(session) %>%
-  summarize(native_acc = mean(nativeAccuracy), 
-            .groups = 'keep')
 
 allData %>%
   group_by(session) %>%
@@ -192,161 +170,5 @@ tab <- cbind(Est = fixef(nativeResult),
 
 # print odd-ratio and confidence interval
 print(exp(tab[2:4,]), digits=3)
-
-```
-
-## Post hoc analyses in case we see a difference between groups - Native accuracy
-
-### Category 1: size
-
-```{r}
-
-cat1 = glmer(nativeAccuracy ~ session + (1 | group) +
-        (1 | pseudoid) + (1 | language:stimulus),
-      subset(allData, category == 1),
-      family = binomial,
-      control=glmerControl(optimizer="bobyqa"))
-
-summary(cat1)
-
-Anova(cat1)
-
-catOne_gorilla <- subset(allData, category == 1 & session == 'gorilla')
-binom.test(sum(catOne_gorilla$grade), nrow(catOne_gorilla), p = .5)
-
-catOne_matlab <- subset(allData, category == 1 & session == 'matlab')
-binom.test(sum(catOne_matlab$grade), nrow(catOne_matlab), p = .5)
-
-```
-
-### Category 3: brightness
-
-```{r}
-
-cat3 = glmer(nativeAccuracy ~ session + (1 | group) +
-        (1 | pseudoid) + (1 | language:stimulus),
-      subset(allData, category == 3),
-      family = binomial,
-      control=glmerControl(optimizer="bobyqa"))
-
-summary(cat3)
-
-Anova(cat3)
-
-catThree_gorilla <- subset(allData, category == 3 & session == 'gorilla')
-binom.test(sum(catThree_gorilla$grade), nrow(catThree_gorilla), p = .5)
-
-catThree_matlab <- subset(allData, category == 3 & session == 'matlab')
-binom.test(sum(catThree_matlab$grade), nrow(catThree_matlab), p = .5)
-
-```
-
-### Category 4: loudness
-
-```{r}
-
-cat4 = glmer(nativeAccuracy ~ session + (1 | group) +
-        (1 | pseudoid) + (1 | language:stimulus),
-      subset(allData, category == 4),
-      family = binomial,
-      control=glmerControl(optimizer="bobyqa"))
-
-summary(cat4)
-
-Anova(cat4)
-
-catFour_gorilla <- subset(allData, category == 4 & session == 'gorilla')
-binom.test(sum(catFour_gorilla$grade), nrow(catFour_gorilla), p = .5)
-
-catFour_matlab <- subset(allData, category == 4 & session == 'matlab')
-binom.test(sum(catFour_matlab$grade), nrow(catFour_matlab), p = .5)
-
-```
-
-### Category 6: velocity
-
-```{r}
-
-cat6 = glmer(nativeAccuracy ~ session + (1 | group) +
-        (1 | pseudoid) + (1 | language:stimulus),
-      subset(allData, category == 6),
-      family = binomial,
-      control=glmerControl(optimizer="bobyqa"))
-
-summary(cat6)
-
-Anova(cat6)
-
-catSix_gorilla <- subset(allData, category == 6 & session == 'gorilla')
-binom.test(sum(catSix_gorilla$grade), nrow(catSix_gorilla), p = .5)
-
-catSix_matlab <- subset(allData, category == 6 & session == 'matlab')
-binom.test(sum(catSix_matlab$grade), nrow(catSix_matlab), p = .5)
-
-```
-
-### Category 7: movement
-
-```{r}
-
-cat7 = glmer(nativeAccuracy ~ session + (1 | group) +
-        (1 | pseudoid) + (1 | language:stimulus),
-      subset(allData, category == 7),
-      family = binomial,
-      control=glmerControl(optimizer="bobyqa"))
-
-summary(cat7)
-
-Anova(cat7)
-
-catSeven_gorilla <- subset(allData, category == 7 & session == 'gorilla')
-binom.test(sum(catSeven_gorilla$grade), nrow(catSeven_gorilla), p = .5)
-
-catSeven_matlab <- subset(allData, category == 7 & session == 'matlab')
-binom.test(sum(catSeven_matlab$grade), nrow(catSeven_matlab), p = .5)
-
-```
-
-### Category 8: space
-
-```{r}
-
-cat8 = glmer(nativeAccuracy ~ session + (1 | group) +
-        (1 | pseudoid) + (1 | language:stimulus),
-      subset(allData, category == 8),
-      family = binomial,
-      control=glmerControl(optimizer="bobyqa"))
-
-summary(cat8)
-
-Anova(cat8)
-
-catEight_gorilla <- subset(allData, category == 8 & session == 'gorilla')
-binom.test(sum(catEight_gorilla$grade), nrow(catEight_gorilla), p = .5)
-
-catEight_matlab <- subset(allData, category == 8 & session == 'matlab')
-binom.test(sum(catEight_matlab$grade), nrow(catEight_matlab), p = .5)
-
-```
-
-### Category 9: distance
-
-```{r}
-
-cat9 = glmer(nativeAccuracy ~ session + (1 | group) +
-        (1 | pseudoid) + (1 | language:stimulus),
-      subset(allData, category == 9),
-      family = binomial,
-      control=glmerControl(optimizer="bobyqa"))
-
-summary(cat9)
-
-Anova(cat9)
-
-catNine_gorilla <- subset(allData, category == 9 & session == 'gorilla')
-binom.test(sum(catNine_gorilla$grade), nrow(catNine_gorilla), p = .5)
-
-catNine_matlab <- subset(allData, category == 9 & session == 'matlab')
-binom.test(sum(catNine_matlab$grade), nrow(catNine_matlab), p = .5)
 
 ```
