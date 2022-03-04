@@ -184,24 +184,23 @@ print(exp(tab[2:4,]), digits=3)
 
 ```
 
-I originally wrote:
+There is no significant difference between the performance of two groups in guessing the meaning of words - main effect of group is not significant.
 
-"We found no significant difference between the performance of two groups in guessing the meaning of words (β = -0.04, SE = 0.15, z = -0.24, p = .812) - main effect of group is not significant. We also found no significant difference between the performance of two groups across the symbolic categories (β =0.01, SE = 0.01, z =0.70, p = .487)."
+(β = -0.04, SE = 0.15, z = -.0.24, p = .812, odds ratio = 0.96, LL = 0.72, UL = 1.30)
 
-According to your other paper, we could use:
+There is no significant difference between the performance of two groups across the symbolic categories 
 
-(β =0.01, SE = 0.01, z = -.0.24, p = .812, odds ratio = 0.96, LL = 0.71, UL = 1.30) &
-(z = 0.70, p = .487, odds ratio = 1.01, LL = 0.98, UL = 1.04)
+(β =0.01, SE = 0.01, z =0.70, p = .487, odds ratio = 1.01, LL = 0.98, UL = 1.04)
 
-However, according to my stats book we are supposed to report B(SE), LL, odds ratio, and UL.
+Chi-square test of independence showed that there was no significant difference between the blind and sighted groups in their ability to guess the meaning of foreign words 
 
-Note: P values don't have a leading 0
-Chi square APA style:
-X2 (degress of freedom, N = sample size) = chi-square statistic value, p = p value.
+(X2 [1, N = 2] = 0.01, p = .920) 
 
-A chi-square test of independence showed that there was no significant difference between the blind and sighted groups in their ability to guess the meaning of foreign words (X2 [1, N = 2] = 0.01, p = .920) across all semantic categories (X2 [1, N = 2] = 0.48, p = .487).
+across all semantic categories 
 
-## Post hoc analyses in case we see a difference between groups - Native accuracy
+(X2 [1, N = 2] = 0.48, p = .487).
+
+## Post hoc analyses - Native accuracy
 
 ### Category 1: size
 
@@ -225,6 +224,11 @@ binom.test(sum(catOne_SC$grade), nrow(catOne_SC), p = .5)
 
 ```
 
+Chi-square test of independence showed that there was no significant difference between the blind and sighted groups in their ability to guess the meaning of foreign words 
+
+(X2 [1, N = 2] = 0.00, p = .970) 
+
+
 ### Category 3: brightness
 
 ```{r}
@@ -246,6 +250,11 @@ catThree_SC <- subset(allData, category == 3 & group == 'SC')
 binom.test(sum(catThree_SC$grade), nrow(catThree_SC), p = .5)
 
 ```
+
+Chi-square test of independence showed that there was no significant difference between the blind and sighted groups in their ability to guess the meaning of foreign words 
+
+(X2 [1, N = 2] = 0.16, p = .686) 
+
 
 ### Category 4: loudness
 
@@ -269,6 +278,11 @@ binom.test(sum(catFour_SC$grade), nrow(catFour_SC), p = .5)
 
 ```
 
+Chi-square test of independence showed that there was no significant difference between the blind and sighted groups in their ability to guess the meaning of foreign words 
+
+(X2 [1, N = 2] = 0.53, p = .465) 
+
+
 ### Category 6: velocity
 
 ```{r}
@@ -290,6 +304,11 @@ catSix_SC <- subset(allData, category == 6 & group == 'SC')
 binom.test(sum(catSix_SC$grade), nrow(catSix_SC), p = .5)
 
 ```
+
+Chi-square test of independence showed that there was no significant difference between the blind and sighted groups in their ability to guess the meaning of foreign words 
+
+(X2 [1, N = 2] = 0.02, p = .891) 
+
 
 ### Category 7: movement
 
@@ -313,6 +332,11 @@ binom.test(sum(catSeven_SC$grade), nrow(catSeven_SC), p = .5)
 
 ```
 
+Chi-square test of independence showed that there was no significant difference between the blind and sighted groups in their ability to guess the meaning of foreign words 
+
+(X2 [1, N = 2] = 0.25, p = .616) 
+
+
 ### Category 8: space
 
 ```{r}
@@ -334,6 +358,10 @@ catEight_SC <- subset(allData, category == 8 & group == 'SC')
 binom.test(sum(catEight_SC$grade), nrow(catEight_SC), p = .5)
 
 ```
+
+Chi-square test of independence showed that there was no significant difference between the blind and sighted groups in their ability to guess the meaning of foreign words 
+
+(X2 [1, N = 2] = 0.73, p = .393) 
 
 ### Category 9: distance
 
@@ -357,6 +385,9 @@ binom.test(sum(catNine_SC$grade), nrow(catNine_SC), p = .5)
 
 ```
 
+Chi-square test of independence showed that there was no significant difference between the blind and sighted groups in their ability to guess the meaning of foreign words 
+
+(X2 [1, N = 2] = 0.33, p = .569) 
 
 
 

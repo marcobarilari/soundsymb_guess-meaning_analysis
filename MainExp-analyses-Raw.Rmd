@@ -59,6 +59,12 @@ The header column is organized as follows:
 
 allData<-read.csv("data/allData.csv", header = TRUE)
 
+allData$rawAccuracy <- as.integer(allData$response == allData$meaning)
+
+allData$nativeAccuracy <- ifelse(allData$value == 'goodop', 
+                                 abs(allData$rawAccuracy - 1), 
+                                 allData$rawAccuracy + 0)
+
 ```
 
 ## Plot of the raw accuracy per category.
@@ -131,7 +137,24 @@ print(exp(tab[2:4,]), digits=3)
 
 ```
 
-## Post hoc analyses in case we see a difference between groups - raw accuracy
+There is no significant difference between the performance of two groups in guessing the meaning of words - main effect of group is not significant.
+
+(β = -0.00, SE = 0.11, z = -.0.04, p = .970, odds ratio = 1.00, LL = 0.80, UL = 1.24)
+
+There is no significant difference between the performance of two groups across the symbolic categories 
+
+(β =0.00, SE = 0.01, z =0.03, p = .980, odds ratio = 1.00, LL = 0.98, UL = 1.03)
+
+Chi-square test of independence showed that there was no significant difference between the blind and sighted groups in their ability to guess the meaning of foreign words 
+
+(X2 [1, N = 2] = 0.00, p = .978) 
+
+across all semantic categories 
+
+(X2 [1, N = 2] = 0.00, p = .980).
+
+
+## Post hoc analyses - raw accuracy
 
 ### Category 1: size
 
@@ -155,6 +178,10 @@ binom.test(sum(catOne_SC$grade), nrow(catOne_SC), p = .5)
 
 ```
 
+Chi-square test of independence showed that there was no significant difference between the blind and sighted groups in their ability to guess the meaning of foreign words 
+
+(X2 [1, N = 2] = 0.02, p = .880) 
+
 ### Category 3: brightness
 
 ```{r}
@@ -176,6 +203,10 @@ catThree_SC <- subset(allData, category == 3 & group == 'SC')
 binom.test(sum(catThree_SC$grade), nrow(catThree_SC), p = .5)
 
 ```
+
+Chi-square test of independence showed that there was no significant difference between the blind and sighted groups in their ability to guess the meaning of foreign words 
+
+(X2 [1, N = 2] = 0.98, p = .322) 
 
 ### Category 4: loudness
 
@@ -199,6 +230,10 @@ binom.test(sum(catFour_SC$grade), nrow(catFour_SC), p = .5)
 
 ```
 
+Chi-square test of independence showed that there was no significant difference between the blind and sighted groups in their ability to guess the meaning of foreign words 
+
+(X2 [1, N = 2] = 1.14, p = .285) 
+
 ### Category 6: velocity
 
 ```{r}
@@ -220,6 +255,10 @@ catSix_SC <- subset(allData, category == 6 & group == 'SC')
 binom.test(sum(catSix_SC$grade), nrow(catSix_SC), p = .5)
 
 ```
+
+Chi-square test of independence showed that there was no significant difference between the blind and sighted groups in their ability to guess the meaning of foreign words 
+
+(X2 [1, N = 2] = 4.26, p = .039) 
 
 ### Category 7: movement
 
@@ -243,6 +282,10 @@ binom.test(sum(catSeven_SC$grade), nrow(catSeven_SC), p = .5)
 
 ```
 
+Chi-square test of independence showed that there was no significant difference between the blind and sighted groups in their ability to guess the meaning of foreign words 
+
+(X2 [1, N = 2] = 2.20, p = .138) 
+
 ### Category 8: space
 
 ```{r}
@@ -264,6 +307,10 @@ catEight_SC <- subset(allData, category == 8 & group == 'SC')
 binom.test(sum(catEight_SC$grade), nrow(catEight_SC), p = .5)
 
 ```
+
+Chi-square test of independence showed that there was no significant difference between the blind and sighted groups in their ability to guess the meaning of foreign words 
+
+(X2 [1, N = 2] = 0.03, p = .862) 
 
 ### Category 9: distance
 
@@ -287,4 +334,7 @@ binom.test(sum(catNine_SC$grade), nrow(catNine_SC), p = .5)
 
 ```
 
+Chi-square test of independence showed that there was no significant difference between the blind and sighted groups in their ability to guess the meaning of foreign words 
+
+(X2 [1, N = 2] = 2.13, p = .145)
 
