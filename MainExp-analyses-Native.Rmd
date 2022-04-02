@@ -105,10 +105,12 @@ Category 9: distance
 ```{r}
 
 categoryAccuracy_wide <- allData %>%
-  group_by(category, group) %>%
-  summarize(rawAccuracy = mean(rawAccuracy), nativeAccuracy = mean(nativeAccuracy), 
-            .groups = 'keep') %>% 
-  pivot_wider(names_from = group, values_from = c(rawAccuracy, nativeAccuracy))
+  group_by(group) %>%
+  summarize(rawAccuracy_mean = mean(rawAccuracy), nativeAccuracy_mean = mean(nativeAccuracy), 
+            rawAccuracy_sd = sd(rawAccuracy), nativeAccuracy_sd = sd(nativeAccuracy),
+            n = n(),
+            rawAccuracy_se = rawAccuracy_sd / sqrt(n), nativeAccuracy_se = nativeAccuracy_sd / sqrt(n),
+            .groups = 'keep')
 
 print(categoryAccuracy_wide)
 
@@ -182,6 +184,11 @@ tab <- cbind(Est = fixef(nativeResult),
 # print odd-ratio and confidence interval
 print(exp(tab[2:4,]), digits=3)
 
+native_EB <- subset(allData, group == 'EB')
+binom.test(sum(native_EB$grade), nrow(native_EB), p = .5)
+
+native_SC <- subset(allData, group == 'SC')
+binom.test(sum(native_SC$grade), nrow(native_SC), p = .5)
 ```
 
 There is no significant difference between the performance of two groups in guessing the meaning of words - main effect of group is not significant.

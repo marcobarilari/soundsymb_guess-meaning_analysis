@@ -94,13 +94,16 @@ Category 9: distance
 
 ```{r}
 
-categoryAccuracy_wide <- allData %>%
-  group_by(category, group) %>%
-  summarize(rawAccuracy = mean(rawAccuracy), nativeAccuracy = mean(nativeAccuracy), 
-            .groups = 'keep') %>% 
-  pivot_wider(names_from = group, values_from = c(rawAccuracy, nativeAccuracy))
 
-print(categoryAccuracy_wide)
+categoryAccuracy_sub <- allData %>%
+  group_by(group) %>%
+  summarize(rawAccuracy_mean = mean(rawAccuracy), nativeAccuracy_mean = mean(nativeAccuracy), 
+            rawAccuracy_sd = sd(rawAccuracy), nativeAccuracy_sd = sd(nativeAccuracy),
+            n = n(),
+            rawAccuracy_se = rawAccuracy_sd / sqrt(n), nativeAccuracy_se = nativeAccuracy_sd / sqrt(n),
+            .groups = 'keep')
+
+print(categoryAccuracy_sub)
 
 ```
 
