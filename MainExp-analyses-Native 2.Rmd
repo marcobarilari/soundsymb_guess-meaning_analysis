@@ -2,7 +2,9 @@
 title: "Semantic Processing in SC and EB - Main Analysis with Native Accuracy"
 author: "Minah Chang"
 date: "2 April, 2022"
-output: html_document
+output:
+  pdf_document: default
+  html_document: default
 ---
 
 ### Data preparation
@@ -120,6 +122,10 @@ print(categoryAccuracy_wide)
 
 ```{r}
 
+#allData2 <- subset(allData, session == 'matlab')
+  
+  
+  
 categoryAccuracy_tidy <- allData %>%
   group_by(group, category) %>%
   summarize(rawAccuracy_mean = mean(rawAccuracy), nativeAccuracy_mean = mean(nativeAccuracy), 
@@ -165,15 +171,36 @@ ggplot(data = categoryAccuracy_tidy,
 
 ```{r}
 
-nativeResult <- glmer(nativeAccuracy ~ category + group + session + category*group +
+summary(allData)
+allData$pseudoid <- factor(allData$pseudoid)
+allData$category <- factor(allData$category)
+allData$group <- factor(allData$group)
+allData$session <- factor(allData$session)
+allData$language <- factor(allData$language)
+allData$stimulus <- factor(allData$stimulus)
+
+
+sessionResults <- glmer(nativeAccuracy ~ session +
         (1 | pseudoid) + (1 | language:stimulus), 
       data = allData,
       family = binomial,
       control = glmerControl(optimizer="bobyqa"))
 
-summary(nativeResult)
+summary(sessionResults)
 
-Anova(nativeResult)
+Anova(sessionResults)
+  
+  
+  
+nativeResults <- glmer(nativeAccuracy ~ category + group + category*group +
+        (1 | pseudoid) + (1 | language:stimulus), 
+      data = allData,
+      family = binomial,
+      control = glmerControl(optimizer="bobyqa"))
+
+summary(nativeResults)
+
+Anova(nativeResults)
 
 # calculate odd ratio and confidence intervals
 se <- sqrt(diag(vcov(nativeResult)))
@@ -190,7 +217,6 @@ binom.test(sum(native_EB$grade), nrow(native_EB), p = .5)
 native_SC <- subset(allData, group == 'SC')
 binom.test(sum(native_SC$grade), nrow(native_SC), p = .5)
 ```
-
 
 
 ## Post hoc analyses - Native accuracy
@@ -217,10 +243,6 @@ binom.test(sum(catOne_SC$grade), nrow(catOne_SC), p = .5)
 
 ```
 
-Chi-square test of independence showed that there was no significant difference between the blind and sighted groups in their ability to guess the meaning of foreign words 
-
-(X2 [1, N = 2] = 0.00, p = .970) 
-
 
 ### Category 3: brightness
 
@@ -243,10 +265,6 @@ catThree_SC <- subset(allData, category == 3 & group == 'SC')
 binom.test(sum(catThree_SC$grade), nrow(catThree_SC), p = .5)
 
 ```
-
-Chi-square test of independence showed that there was no significant difference between the blind and sighted groups in their ability to guess the meaning of foreign words 
-
-(X2 [1, N = 2] = 0.16, p = .686) 
 
 
 ### Category 4: loudness
@@ -271,10 +289,6 @@ binom.test(sum(catFour_SC$grade), nrow(catFour_SC), p = .5)
 
 ```
 
-Chi-square test of independence showed that there was no significant difference between the blind and sighted groups in their ability to guess the meaning of foreign words 
-
-(X2 [1, N = 2] = 0.53, p = .465) 
-
 
 ### Category 6: velocity
 
@@ -297,10 +311,6 @@ catSix_SC <- subset(allData, category == 6 & group == 'SC')
 binom.test(sum(catSix_SC$grade), nrow(catSix_SC), p = .5)
 
 ```
-
-Chi-square test of independence showed that there was no significant difference between the blind and sighted groups in their ability to guess the meaning of foreign words 
-
-(X2 [1, N = 2] = 0.02, p = .891) 
 
 
 ### Category 7: movement
@@ -325,10 +335,6 @@ binom.test(sum(catSeven_SC$grade), nrow(catSeven_SC), p = .5)
 
 ```
 
-Chi-square test of independence showed that there was no significant difference between the blind and sighted groups in their ability to guess the meaning of foreign words 
-
-(X2 [1, N = 2] = 0.25, p = .616) 
-
 
 ### Category 8: space
 
@@ -352,9 +358,6 @@ binom.test(sum(catEight_SC$grade), nrow(catEight_SC), p = .5)
 
 ```
 
-Chi-square test of independence showed that there was no significant difference between the blind and sighted groups in their ability to guess the meaning of foreign words 
-
-(X2 [1, N = 2] = 0.73, p = .393) 
 
 ### Category 9: distance
 
@@ -377,11 +380,4 @@ catNine_SC <- subset(allData, category == 9 & group == 'SC')
 binom.test(sum(catNine_SC$grade), nrow(catNine_SC), p = .5)
 
 ```
-
-Chi-square test of independence showed that there was no significant difference between the blind and sighted groups in their ability to guess the meaning of foreign words 
-
-(X2 [1, N = 2] = 0.33, p = .569) 
-
-
-
 

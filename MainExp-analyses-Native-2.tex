@@ -1,0 +1,1330 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[
+]{article}
+\title{Semantic Processing in SC and EB - Main Analysis with Native
+Accuracy}
+\author{Minah Chang}
+\date{2 April, 2022}
+
+\usepackage{amsmath,amssymb}
+\usepackage{lmodern}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math}
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\hypersetup{
+  pdftitle={Semantic Processing in SC and EB - Main Analysis with Native Accuracy},
+  pdfauthor={Minah Chang},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+\urlstyle{same} % disable monospaced font for URLs
+\usepackage[margin=1in]{geometry}
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.77,0.63,0.00}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\usepackage{graphicx}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+% Set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\ifLuaTeX
+  \usepackage{selnolig}  % disable illegal ligatures
+\fi
+
+\begin{document}
+\maketitle
+
+\hypertarget{data-preparation}{%
+\subsubsection{Data preparation}\label{data-preparation}}
+
+\begin{itemize}
+\tightlist
+\item
+  All Distractor trials were removed (4186 values) and not considered
+  for further analyses.
+\end{itemize}
+
+\hypertarget{load-processed-and-merged-data}{%
+\subsubsection{Load processed and merged
+data}\label{load-processed-and-merged-data}}
+
+The header column is organized as follows:
+
+\begin{itemize}
+\item
+  \begin{enumerate}
+  \def\labelenumi{\arabic{enumi}.}
+  \tightlist
+  \item
+    pseudoid
+  \end{enumerate}
+\item
+  \begin{enumerate}
+  \def\labelenumi{\arabic{enumi}.}
+  \setcounter{enumi}{1}
+  \tightlist
+  \item
+    group (EB or SC)
+  \end{enumerate}
+\item
+  \begin{enumerate}
+  \def\labelenumi{\arabic{enumi}.}
+  \setcounter{enumi}{2}
+  \tightlist
+  \item
+    session (matlab or gorilla)
+  \end{enumerate}
+\item
+  \begin{enumerate}
+  \def\labelenumi{\arabic{enumi}.}
+  \setcounter{enumi}{3}
+  \tightlist
+  \item
+    category (integers 1, 3, 4, 6-9)
+  \end{enumerate}
+
+  \begin{itemize}
+  \tightlist
+  \item
+    category 1: size
+  \item
+    category 3: brightness
+  \item
+    category 4: loudness
+  \item
+    category 6: velocity
+  \item
+    category 7: movement
+  \item
+    category 8: space
+  \item
+    category 9: distance
+  \end{itemize}
+\item
+  \begin{enumerate}
+  \def\labelenumi{\arabic{enumi}.}
+  \setcounter{enumi}{4}
+  \tightlist
+  \item
+    wordcode
+  \end{enumerate}
+\item
+  \begin{enumerate}
+  \def\labelenumi{\arabic{enumi}.}
+  \setcounter{enumi}{5}
+  \tightlist
+  \item
+    language
+  \end{enumerate}
+\item
+  \begin{enumerate}
+  \def\labelenumi{\arabic{enumi}.}
+  \setcounter{enumi}{6}
+  \tightlist
+  \item
+    stimulus
+  \end{enumerate}
+\item
+  \begin{enumerate}
+  \def\labelenumi{\arabic{enumi}.}
+  \setcounter{enumi}{7}
+  \tightlist
+  \item
+    meaning
+  \end{enumerate}
+\item
+  \begin{enumerate}
+  \def\labelenumi{\arabic{enumi}.}
+  \setcounter{enumi}{8}
+  \tightlist
+  \item
+    value (good or goodop) - *See note below.
+  \end{enumerate}
+\item
+  \begin{enumerate}
+  \def\labelenumi{\arabic{enumi}.}
+  \setcounter{enumi}{9}
+  \tightlist
+  \item
+    response
+  \end{enumerate}
+\item
+  \begin{enumerate}
+  \def\labelenumi{\arabic{enumi}.}
+  \setcounter{enumi}{10}
+  \tightlist
+  \item
+    grade (1 if correct, 0 if incorrect)
+  \end{enumerate}
+\end{itemize}
+
+*Note about native accuracy: given that some words in specific native
+languages groups can ``sound'' with the opposite meaning as presented in
+Tzeng (2017), we recompute the accuracy for those stimuli that in our
+prestudy were mapped systematically to the opposite meaning. For these
+subset of stimuli, we consider the response correct if it does not match
+the original meaning and incorrect if it does. The 9th column ``value''
+indicates whether the accurcy should be calculated as the word's meaning
+(good), or the opposite meaning (goodop). Raw accuracy rate is
+calculated without taking into account the value of good or goodop.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{allData}\OtherTok{\textless{}{-}}\FunctionTok{read.csv}\NormalTok{(}\StringTok{"data/allData.csv"}\NormalTok{, }\AttributeTok{header =} \ConstantTok{TRUE}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+Check that all the participants have the same number of responses per
+category
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{allData }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{group\_by}\NormalTok{(pseudoid, group, category) }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{count}\NormalTok{() }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{pivot\_wider}\NormalTok{(}\AttributeTok{names\_from =}\NormalTok{ category, }\AttributeTok{values\_from =}\NormalTok{ n) }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{print}\NormalTok{(}\AttributeTok{n =} \DecValTok{46}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 46 x 9
+## # Groups:   pseudoid, group [46]
+##    pseudoid     group   `1`   `3`   `4`   `6`   `7`   `8`   `9`
+##    <chr>        <chr> <int> <int> <int> <int> <int> <int> <int>
+##  1 19640823GUBG EB       52    48    18    30    44    36    44
+##  2 19661130POST SC       52    48    18    30    44    36    44
+##  3 19670526ILPN SC       52    48    18    30    44    36    44
+##  4 19670618TSNL SC       52    48    18    30    44    36    44
+##  5 19680710MDNC EB       52    48    18    30    44    36    44
+##  6 19690929DADI EB       52    48    18    30    44    36    44
+##  7 19720428VLML EB       52    48    18    30    44    36    44
+##  8 19720829RNGA EB       52    48    18    30    44    36    44
+##  9 19730317NDGA SC       52    48    18    30    44    36    44
+## 10 19790108PTCC EB       52    48    18    30    44    36    44
+## 11 19810605PTCN EB       52    48    18    30    44    36    44
+## 12 19810729MRBR SC       52    48    18    30    44    36    44
+## 13 19810809SLCS SC       52    48    18    30    44    36    44
+## 14 19811112MRLM EB       52    48    18    30    44    36    44
+## 15 19820723CICS EB       52    48    18    30    44    36    44
+## 16 19830606MRZN SC       52    48    18    30    44    36    44
+## 17 19850724IDCV SC       52    48    18    30    44    36    44
+## 18 19851030GBGL SC       52    48    18    30    44    36    44
+## 19 19860126GOAR EB       52    48    18    30    44    36    44
+## 20 19861002MLCP EB       52    48    18    30    44    36    44
+## 21 19861221LIMZ SC       52    48    18    30    44    36    44
+## 22 19870129LCMR EB       52    48    18    30    44    36    44
+## 23 19870513RNGA EB       52    48    18    30    44    36    44
+## 24 19880218PTFR SC       52    48    18    30    44    36    44
+## 25 19880701PTCR SC       52    48    18    30    44    36    44
+## 26 19890126ARPS EB       52    48    18    30    44    36    44
+## 27 19890321POCC EB       52    48    18    30    44    36    44
+## 28 19890429RSPO EB       52    48    18    30    44    36    44
+## 29 19890517AGRG EB       52    48    18    30    44    36    44
+## 30 19891130ARMR SC       52    48    18    30    44    36    44
+## 31 19891214ATBS EB       52    48    18    30    44    36    44
+## 32 19900126MRTV SC       52    48    18    30    44    36    44
+## 33 19900609ANDL EB       52    48    18    30    44    36    44
+## 34 19901209MRLC SC       52    48    18    30    44    36    44
+## 35 19910714AGLO EB       52    48    18    30    44    36    44
+## 36 19910811ARBL SC       52    48    18    30    44    36    44
+## 37 19911015RTFA EB       52    48    18    30    44    36    44
+## 38 19920128SMBT EB       52    48    18    30    44    36    44
+## 39 19920717LOMN SC       52    48    18    30    44    36    44
+## 40 19921108GBCC SC       52    48    18    30    44    36    44
+## 41 19921118GOFT SC       52    48    18    30    44    36    44
+## 42 19930318ANMS SC       52    48    18    30    44    36    44
+## 43 19930322ATBA SC       52    48    18    30    44    36    44
+## 44 19940921BRFL SC       52    48    18    30    44    36    44
+## 45 19960222ANGL EB       52    48    18    30    44    36    44
+## 46 19961014GOPA SC       52    48    18    30    44    36    44
+\end{verbatim}
+
+\hypertarget{analysis}{%
+\subsubsection{Analysis}\label{analysis}}
+
+\hypertarget{compute-the-native-and-raw-accuracy}{%
+\subsubsection{Compute the native and raw
+accuracy}\label{compute-the-native-and-raw-accuracy}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{allData}\SpecialCharTok{$}\NormalTok{rawAccuracy }\OtherTok{\textless{}{-}} \FunctionTok{as.integer}\NormalTok{(allData}\SpecialCharTok{$}\NormalTok{response }\SpecialCharTok{==}\NormalTok{ allData}\SpecialCharTok{$}\NormalTok{meaning)}
+
+\NormalTok{allData}\SpecialCharTok{$}\NormalTok{nativeAccuracy }\OtherTok{\textless{}{-}} \FunctionTok{ifelse}\NormalTok{(allData}\SpecialCharTok{$}\NormalTok{value }\SpecialCharTok{==} \StringTok{\textquotesingle{}goodop\textquotesingle{}}\NormalTok{, }
+                                 \FunctionTok{abs}\NormalTok{(allData}\SpecialCharTok{$}\NormalTok{rawAccuracy }\SpecialCharTok{{-}} \DecValTok{1}\NormalTok{), }
+\NormalTok{                                 allData}\SpecialCharTok{$}\NormalTok{rawAccuracy }\SpecialCharTok{+} \DecValTok{0}\NormalTok{)}
+\NormalTok{allData }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{group\_by}\NormalTok{(group) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{summarize}\NormalTok{(}\AttributeTok{raw\_acc =} \FunctionTok{mean}\NormalTok{(rawAccuracy), }
+            \AttributeTok{native\_acc =} \FunctionTok{mean}\NormalTok{(nativeAccuracy), }
+            \AttributeTok{.groups =} \StringTok{\textquotesingle{}keep\textquotesingle{}}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 2 x 3
+## # Groups:   group [2]
+##   group raw_acc native_acc
+##   <chr>   <dbl>      <dbl>
+## 1 EB      0.563      0.624
+## 2 SC      0.562      0.626
+\end{verbatim}
+
+\hypertarget{accuracy-per-group-and-category}{%
+\subsubsection{Accuracy per group and
+category}\label{accuracy-per-group-and-category}}
+
+Category 1: size Category 3: brightness Category 4: loudness Category 6:
+velocity Category 7: movement Category 8: space Category 9: distance
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{categoryAccuracy\_wide }\OtherTok{\textless{}{-}}\NormalTok{ allData }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{group\_by}\NormalTok{(group) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{summarize}\NormalTok{(}\AttributeTok{rawAccuracy\_mean =} \FunctionTok{mean}\NormalTok{(rawAccuracy), }\AttributeTok{nativeAccuracy\_mean =} \FunctionTok{mean}\NormalTok{(nativeAccuracy), }
+            \AttributeTok{rawAccuracy\_sd =} \FunctionTok{sd}\NormalTok{(rawAccuracy), }\AttributeTok{nativeAccuracy\_sd =} \FunctionTok{sd}\NormalTok{(nativeAccuracy),}
+            \AttributeTok{n =} \FunctionTok{n}\NormalTok{(),}
+            \AttributeTok{rawAccuracy\_se =}\NormalTok{ rawAccuracy\_sd }\SpecialCharTok{/} \FunctionTok{sqrt}\NormalTok{(n), }\AttributeTok{nativeAccuracy\_se =}\NormalTok{ nativeAccuracy\_sd }\SpecialCharTok{/} \FunctionTok{sqrt}\NormalTok{(n),}
+            \AttributeTok{.groups =} \StringTok{\textquotesingle{}keep\textquotesingle{}}\NormalTok{)}
+
+\FunctionTok{print}\NormalTok{(categoryAccuracy\_wide)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 2 x 8
+## # Groups:   group [2]
+##   group rawAccuracy_mean nativeAccuracy_m~ rawAccuracy_sd nativeAccuracy_~     n
+##   <chr>            <dbl>             <dbl>          <dbl>            <dbl> <int>
+## 1 EB               0.563             0.624          0.496            0.484  6256
+## 2 SC               0.562             0.626          0.496            0.484  6256
+## # ... with 2 more variables: rawAccuracy_se <dbl>, nativeAccuracy_se <dbl>
+\end{verbatim}
+
+\hypertarget{plot-of-the-native-accuracy-per-category.}{%
+\subsection{Plot of the native accuracy per
+category.}\label{plot-of-the-native-accuracy-per-category.}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{categoryAccuracy\_tidy }\OtherTok{\textless{}{-}}\NormalTok{ allData }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{group\_by}\NormalTok{(group, category) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{summarize}\NormalTok{(}\AttributeTok{rawAccuracy\_mean =} \FunctionTok{mean}\NormalTok{(rawAccuracy), }\AttributeTok{nativeAccuracy\_mean =} \FunctionTok{mean}\NormalTok{(nativeAccuracy), }
+            \AttributeTok{rawAccuracy\_sd =} \FunctionTok{sd}\NormalTok{(rawAccuracy), }\AttributeTok{nativeAccuracy\_sd =} \FunctionTok{sd}\NormalTok{(nativeAccuracy),}
+            \AttributeTok{n =} \FunctionTok{n}\NormalTok{(),}
+            \AttributeTok{rawAccuracy\_se =}\NormalTok{ rawAccuracy\_sd }\SpecialCharTok{/} \FunctionTok{sqrt}\NormalTok{(n), }\AttributeTok{nativeAccuracy\_se =}\NormalTok{ nativeAccuracy\_sd }\SpecialCharTok{/} \FunctionTok{sqrt}\NormalTok{(n),}
+            \AttributeTok{.groups =} \StringTok{\textquotesingle{}keep\textquotesingle{}}\NormalTok{)}
+
+\FunctionTok{print}\NormalTok{(categoryAccuracy\_tidy)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 14 x 9
+## # Groups:   group, category [14]
+##    group category rawAccuracy_mean nativeAccuracy_mean rawAccuracy_sd
+##    <chr>    <int>            <dbl>               <dbl>          <dbl>
+##  1 EB           1            0.627               0.668          0.484
+##  2 EB           3            0.596               0.654          0.491
+##  3 EB           4            0.510               0.418          0.501
+##  4 EB           6            0.532               0.649          0.499
+##  5 EB           7            0.5                 0.645          0.500
+##  6 EB           8            0.543               0.553          0.498
+##  7 EB           9            0.571               0.641          0.495
+##  8 SC           1            0.631               0.671          0.483
+##  9 SC           3            0.570               0.637          0.495
+## 10 SC           4            0.471               0.447          0.500
+## 11 SC           6            0.596               0.643          0.491
+## 12 SC           7            0.534               0.624          0.499
+## 13 SC           8            0.539               0.582          0.499
+## 14 SC           9            0.535               0.660          0.499
+## # ... with 4 more variables: nativeAccuracy_sd <dbl>, n <int>,
+## #   rawAccuracy_se <dbl>, nativeAccuracy_se <dbl>
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{ggplot}\NormalTok{(}\AttributeTok{data =}\NormalTok{ categoryAccuracy\_tidy, }
+       \FunctionTok{aes}\NormalTok{(}\AttributeTok{x =} \FunctionTok{as.factor}\NormalTok{(category), }\AttributeTok{y =}\NormalTok{ nativeAccuracy\_mean, }\AttributeTok{fill =}\NormalTok{ group)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_bar}\NormalTok{(}\AttributeTok{stat=}\StringTok{"identity"}\NormalTok{, }\AttributeTok{position=}\FunctionTok{position\_dodge}\NormalTok{()) }\SpecialCharTok{+}
+  \FunctionTok{theme\_classic}\NormalTok{() }\SpecialCharTok{+}
+  \FunctionTok{scale\_fill\_manual}\NormalTok{(}\AttributeTok{values=}\FunctionTok{c}\NormalTok{(}\StringTok{\textquotesingle{}grey52\textquotesingle{}}\NormalTok{,}\StringTok{\textquotesingle{}darkorange1\textquotesingle{}}\NormalTok{), }\AttributeTok{labels=}\FunctionTok{c}\NormalTok{(}\StringTok{\textquotesingle{}Blind\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}Sighted\textquotesingle{}}\NormalTok{)) }\SpecialCharTok{+}
+  \FunctionTok{scale\_y\_continuous}\NormalTok{(}\AttributeTok{limits=}\FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, }\FloatTok{0.85}\NormalTok{), }\AttributeTok{breaks=}\FunctionTok{seq}\NormalTok{(}\DecValTok{0}\NormalTok{, }\FloatTok{0.85}\NormalTok{, }\FloatTok{0.1}\NormalTok{), }\AttributeTok{expand =} \FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{,}\DecValTok{0}\NormalTok{)) }\SpecialCharTok{+}
+  \FunctionTok{scale\_x\_discrete}\NormalTok{(}\AttributeTok{limits=}\FunctionTok{c}\NormalTok{(}\StringTok{"1"}\NormalTok{, }\StringTok{"3"}\NormalTok{, }\StringTok{"4"}\NormalTok{, }\StringTok{"6"}\NormalTok{, }\StringTok{"7"}\NormalTok{, }\StringTok{"8"}\NormalTok{, }\StringTok{"9"}\NormalTok{),}
+                   \AttributeTok{labels =} \FunctionTok{c}\NormalTok{(}\StringTok{"size"}\NormalTok{, }\StringTok{"brightness"}\NormalTok{, }\StringTok{"loudness"}\NormalTok{, }\StringTok{"velocity"}\NormalTok{, }\StringTok{"movement"}\NormalTok{, }\StringTok{"space"}\NormalTok{, }\StringTok{"distance"}\NormalTok{)) }\SpecialCharTok{+} 
+  \FunctionTok{geom\_errorbar}\NormalTok{(}\FunctionTok{aes}\NormalTok{(}\AttributeTok{ymin =}\NormalTok{ nativeAccuracy\_mean }\SpecialCharTok{{-}}\NormalTok{ nativeAccuracy\_se,}
+                    \AttributeTok{ymax =}\NormalTok{ nativeAccuracy\_mean }\SpecialCharTok{+}\NormalTok{ nativeAccuracy\_se),}
+                \AttributeTok{width =}\NormalTok{ .}\DecValTok{08}\NormalTok{,}
+                \AttributeTok{position =} \FunctionTok{position\_dodge}\NormalTok{(.}\DecValTok{9}\NormalTok{)) }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}\AttributeTok{x=}\StringTok{"Category"}\NormalTok{, }\AttributeTok{y=}\StringTok{"Accuracy"}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{ggtitle}\NormalTok{(}\StringTok{"Native Accuracy"}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{theme}\NormalTok{(}
+    \AttributeTok{text=}\FunctionTok{element\_text}\NormalTok{(}\AttributeTok{size=}\DecValTok{12}\NormalTok{), }
+    \AttributeTok{axis.line =} \FunctionTok{element\_line}\NormalTok{(}\AttributeTok{size =} \FloatTok{0.6}\NormalTok{), }
+    \AttributeTok{axis.text.x =} \FunctionTok{element\_text}\NormalTok{(}\AttributeTok{size=}\DecValTok{10}\NormalTok{,}\AttributeTok{colour=}\StringTok{"black"}\NormalTok{,}
+                               \AttributeTok{angle =} \DecValTok{13}\NormalTok{,}
+                               \AttributeTok{vjust =}\NormalTok{ .}\DecValTok{5}\NormalTok{, }
+                               \AttributeTok{hjust =} \FloatTok{0.5}\NormalTok{), }
+    \AttributeTok{axis.text.y =} \FunctionTok{element\_text}\NormalTok{(}\AttributeTok{size=}\DecValTok{10}\NormalTok{, }\AttributeTok{colour=}\StringTok{\textquotesingle{}black\textquotesingle{}}\NormalTok{), }
+    \AttributeTok{legend.title=}\FunctionTok{element\_blank}\NormalTok{())}\SpecialCharTok{+}
+  \FunctionTok{geom\_hline}\NormalTok{(}\AttributeTok{yintercept=}\FunctionTok{c}\NormalTok{(}\FloatTok{0.5}\NormalTok{), }\AttributeTok{linetype=}\StringTok{"dashed"}\NormalTok{, }\AttributeTok{colour=}\StringTok{"black"}\NormalTok{, }\AttributeTok{size=}\FloatTok{0.3}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{MainExp-analyses-Native-2_files/figure-latex/unnamed-chunk-5-1.pdf}
+
+\hypertarget{are-blind-and-sighted-controls-better-than-chance-at-detemining-the-meaning-of-the-presented-foreing-words-is-there-any-difference-between-the-two-groups}{%
+\subsubsection{Are blind and sighted controls better than chance at
+detemining the meaning of the presented foreing words? Is there any
+difference between the two
+groups?}\label{are-blind-and-sighted-controls-better-than-chance-at-detemining-the-meaning-of-the-presented-foreing-words-is-there-any-difference-between-the-two-groups}}
+
+*We input main effect of semantic category and group and the interaction
+bewteen the two. We input as well random intercept by subject, item
+(each stimulus) and language (each language of the foreign words)
+
+\hypertarget{native-accuracy}{%
+\subsubsection{Native Accuracy}\label{native-accuracy}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{nativeResult }\OtherTok{\textless{}{-}} \FunctionTok{glmer}\NormalTok{(nativeAccuracy }\SpecialCharTok{\textasciitilde{}}\NormalTok{ category }\SpecialCharTok{+}\NormalTok{ group }\SpecialCharTok{+}\NormalTok{ session }\SpecialCharTok{+}\NormalTok{ category}\SpecialCharTok{*}\NormalTok{group }\SpecialCharTok{+}
+\NormalTok{        (}\DecValTok{1} \SpecialCharTok{|}\NormalTok{ pseudoid) }\SpecialCharTok{+}\NormalTok{ (}\DecValTok{1} \SpecialCharTok{|}\NormalTok{ language}\SpecialCharTok{:}\NormalTok{stimulus), }
+      \AttributeTok{data =}\NormalTok{ allData,}
+      \AttributeTok{family =}\NormalTok{ binomial,}
+      \AttributeTok{control =} \FunctionTok{glmerControl}\NormalTok{(}\AttributeTok{optimizer=}\StringTok{"bobyqa"}\NormalTok{))}
+
+\FunctionTok{summary}\NormalTok{(nativeResult)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Generalized linear mixed model fit by maximum likelihood (Laplace
+##   Approximation) [glmerMod]
+##  Family: binomial  ( logit )
+## Formula: nativeAccuracy ~ category + group + session + category * group +  
+##     (1 | pseudoid) + (1 | language:stimulus)
+##    Data: allData
+## Control: glmerControl(optimizer = "bobyqa")
+## 
+##      AIC      BIC   logLik deviance df.resid 
+##  15936.0  15988.1  -7961.0  15922.0    12505 
+## 
+## Scaled residuals: 
+##     Min      1Q  Median      3Q     Max 
+## -2.3988 -1.0768  0.5797  0.7367  2.9087 
+## 
+## Random effects:
+##  Groups            Name        Variance Std.Dev.
+##  language:stimulus (Intercept) 0.2032   0.4508  
+##  pseudoid          (Intercept) 0.1854   0.4306  
+## Number of obs: 12512, groups:  language:stimulus, 271; pseudoid, 46
+## 
+## Fixed effects:
+##                   Estimate Std. Error z value Pr(>|z|)    
+## (Intercept)       0.735058   0.136736   5.376 7.63e-08 ***
+## category         -0.021766   0.013408  -1.623    0.105    
+## groupSC          -0.043672   0.150959  -0.289    0.772    
+## sessionmatlab    -0.166302   0.133330  -1.247    0.212    
+## category:groupSC  0.009353   0.013446   0.696    0.487    
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Correlation of Fixed Effects:
+##             (Intr) catgry gropSC sssnmt
+## category    -0.521                     
+## groupSC     -0.567  0.235              
+## sessionmtlb -0.467  0.000  0.039       
+## ctgry:grpSC  0.258 -0.493 -0.475  0.000
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{Anova}\NormalTok{(nativeResult)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Analysis of Deviance Table (Type II Wald chisquare tests)
+## 
+## Response: nativeAccuracy
+##                 Chisq Df Pr(>Chisq)
+## category       2.1657  1     0.1411
+## group          0.0022  1     0.9626
+## session        1.5557  1     0.2123
+## category:group 0.4838  1     0.4867
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# calculate odd ratio and confidence intervals}
+\NormalTok{se }\OtherTok{\textless{}{-}} \FunctionTok{sqrt}\NormalTok{(}\FunctionTok{diag}\NormalTok{(}\FunctionTok{vcov}\NormalTok{(nativeResult)))}
+\NormalTok{tab }\OtherTok{\textless{}{-}} \FunctionTok{cbind}\NormalTok{(}\AttributeTok{Est =} \FunctionTok{fixef}\NormalTok{(nativeResult),}
+             \AttributeTok{LL =} \FunctionTok{fixef}\NormalTok{(nativeResult) }\SpecialCharTok{{-}} \FloatTok{1.96} \SpecialCharTok{*}\NormalTok{ se,}
+             \AttributeTok{UL =} \FunctionTok{fixef}\NormalTok{(nativeResult) }\SpecialCharTok{+} \FloatTok{1.96} \SpecialCharTok{*}\NormalTok{ se)}
+
+\CommentTok{\# print odd{-}ratio and confidence interval}
+\FunctionTok{print}\NormalTok{(}\FunctionTok{exp}\NormalTok{(tab[}\DecValTok{2}\SpecialCharTok{:}\DecValTok{4}\NormalTok{,]), }\AttributeTok{digits=}\DecValTok{3}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##                 Est    LL   UL
+## category      0.978 0.953 1.00
+## groupSC       0.957 0.712 1.29
+## sessionmatlab 0.847 0.652 1.10
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{native\_EB }\OtherTok{\textless{}{-}} \FunctionTok{subset}\NormalTok{(allData, group }\SpecialCharTok{==} \StringTok{\textquotesingle{}EB\textquotesingle{}}\NormalTok{)}
+\FunctionTok{binom.test}\NormalTok{(}\FunctionTok{sum}\NormalTok{(native\_EB}\SpecialCharTok{$}\NormalTok{grade), }\FunctionTok{nrow}\NormalTok{(native\_EB), }\AttributeTok{p =}\NormalTok{ .}\DecValTok{5}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Exact binomial test
+## 
+## data:  sum(native_EB$grade) and nrow(native_EB)
+## number of successes = 3902, number of trials = 6256, p-value < 2.2e-16
+## alternative hypothesis: true probability of success is not equal to 0.5
+## 95 percent confidence interval:
+##  0.6115812 0.6357458
+## sample estimates:
+## probability of success 
+##              0.6237212
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{native\_SC }\OtherTok{\textless{}{-}} \FunctionTok{subset}\NormalTok{(allData, group }\SpecialCharTok{==} \StringTok{\textquotesingle{}SC\textquotesingle{}}\NormalTok{)}
+\FunctionTok{binom.test}\NormalTok{(}\FunctionTok{sum}\NormalTok{(native\_SC}\SpecialCharTok{$}\NormalTok{grade), }\FunctionTok{nrow}\NormalTok{(native\_SC), }\AttributeTok{p =}\NormalTok{ .}\DecValTok{5}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Exact binomial test
+## 
+## data:  sum(native_SC$grade) and nrow(native_SC)
+## number of successes = 3915, number of trials = 6256, p-value < 2.2e-16
+## alternative hypothesis: true probability of success is not equal to 0.5
+## 95 percent confidence interval:
+##  0.6136715 0.6378096
+## sample estimates:
+## probability of success 
+##              0.6257992
+\end{verbatim}
+
+\hypertarget{post-hoc-analyses---native-accuracy}{%
+\subsection{Post hoc analyses - Native
+accuracy}\label{post-hoc-analyses---native-accuracy}}
+
+\hypertarget{category-1-size}{%
+\subsubsection{Category 1: size}\label{category-1-size}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{cat1 }\OtherTok{=} \FunctionTok{glmer}\NormalTok{(nativeAccuracy }\SpecialCharTok{\textasciitilde{}}\NormalTok{ group }\SpecialCharTok{+}
+\NormalTok{        (}\DecValTok{1} \SpecialCharTok{|}\NormalTok{ pseudoid) }\SpecialCharTok{+}\NormalTok{ (}\DecValTok{1} \SpecialCharTok{|}\NormalTok{ language}\SpecialCharTok{:}\NormalTok{stimulus),}
+      \FunctionTok{subset}\NormalTok{(allData, category }\SpecialCharTok{==} \DecValTok{1}\NormalTok{),}
+      \AttributeTok{family =}\NormalTok{ binomial,}
+      \AttributeTok{control=}\FunctionTok{glmerControl}\NormalTok{(}\AttributeTok{optimizer=}\StringTok{"bobyqa"}\NormalTok{))}
+
+\FunctionTok{summary}\NormalTok{(cat1)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Generalized linear mixed model fit by maximum likelihood (Laplace
+##   Approximation) [glmerMod]
+##  Family: binomial  ( logit )
+## Formula: nativeAccuracy ~ group + (1 | pseudoid) + (1 | language:stimulus)
+##    Data: subset(allData, category == 1)
+## Control: glmerControl(optimizer = "bobyqa")
+## 
+##      AIC      BIC   logLik deviance df.resid 
+##   2805.3   2828.4  -1398.7   2797.3     2388 
+## 
+## Scaled residuals: 
+##     Min      1Q  Median      3Q     Max 
+## -3.1788 -0.9086  0.4607  0.6612  2.8487 
+## 
+## Random effects:
+##  Groups            Name        Variance Std.Dev.
+##  language:stimulus (Intercept) 0.2236   0.4729  
+##  pseudoid          (Intercept) 0.7184   0.8476  
+## Number of obs: 2392, groups:  language:stimulus, 52; pseudoid, 46
+## 
+## Fixed effects:
+##             Estimate Std. Error z value Pr(>|z|)    
+## (Intercept)   0.8127     0.2002   4.059 4.94e-05 ***
+## groupSC       0.0101     0.2680   0.038     0.97    
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Correlation of Fixed Effects:
+##         (Intr)
+## groupSC -0.666
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{Anova}\NormalTok{(cat1)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Analysis of Deviance Table (Type II Wald chisquare tests)
+## 
+## Response: nativeAccuracy
+##        Chisq Df Pr(>Chisq)
+## group 0.0014  1     0.9699
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{catOne\_EB }\OtherTok{\textless{}{-}} \FunctionTok{subset}\NormalTok{(allData, category }\SpecialCharTok{==} \DecValTok{1} \SpecialCharTok{\&}\NormalTok{ group }\SpecialCharTok{==} \StringTok{\textquotesingle{}EB\textquotesingle{}}\NormalTok{)}
+\FunctionTok{binom.test}\NormalTok{(}\FunctionTok{sum}\NormalTok{(catOne\_EB}\SpecialCharTok{$}\NormalTok{grade), }\FunctionTok{nrow}\NormalTok{(catOne\_EB), }\AttributeTok{p =}\NormalTok{ .}\DecValTok{5}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Exact binomial test
+## 
+## data:  sum(catOne_EB$grade) and nrow(catOne_EB)
+## number of successes = 799, number of trials = 1196, p-value < 2.2e-16
+## alternative hypothesis: true probability of success is not equal to 0.5
+## 95 percent confidence interval:
+##  0.6405655 0.6947258
+## sample estimates:
+## probability of success 
+##              0.6680602
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{catOne\_SC }\OtherTok{\textless{}{-}} \FunctionTok{subset}\NormalTok{(allData, category }\SpecialCharTok{==} \DecValTok{1} \SpecialCharTok{\&}\NormalTok{ group }\SpecialCharTok{==} \StringTok{\textquotesingle{}SC\textquotesingle{}}\NormalTok{)}
+\FunctionTok{binom.test}\NormalTok{(}\FunctionTok{sum}\NormalTok{(catOne\_SC}\SpecialCharTok{$}\NormalTok{grade), }\FunctionTok{nrow}\NormalTok{(catOne\_SC), }\AttributeTok{p =}\NormalTok{ .}\DecValTok{5}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Exact binomial test
+## 
+## data:  sum(catOne_SC$grade) and nrow(catOne_SC)
+## number of successes = 802, number of trials = 1196, p-value < 2.2e-16
+## alternative hypothesis: true probability of success is not equal to 0.5
+## 95 percent confidence interval:
+##  0.6431187 0.6971769
+## sample estimates:
+## probability of success 
+##              0.6705686
+\end{verbatim}
+
+\hypertarget{category-3-brightness}{%
+\subsubsection{Category 3: brightness}\label{category-3-brightness}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{cat3 }\OtherTok{=} \FunctionTok{glmer}\NormalTok{(nativeAccuracy }\SpecialCharTok{\textasciitilde{}}\NormalTok{ group }\SpecialCharTok{+}
+\NormalTok{        (}\DecValTok{1} \SpecialCharTok{|}\NormalTok{ pseudoid) }\SpecialCharTok{+}\NormalTok{ (}\DecValTok{1} \SpecialCharTok{|}\NormalTok{ language}\SpecialCharTok{:}\NormalTok{stimulus),}
+      \FunctionTok{subset}\NormalTok{(allData, category }\SpecialCharTok{==} \DecValTok{3}\NormalTok{),}
+      \AttributeTok{family =}\NormalTok{ binomial,}
+      \AttributeTok{control=}\FunctionTok{glmerControl}\NormalTok{(}\AttributeTok{optimizer=}\StringTok{"bobyqa"}\NormalTok{))}
+
+\FunctionTok{summary}\NormalTok{(cat3)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Generalized linear mixed model fit by maximum likelihood (Laplace
+##   Approximation) [glmerMod]
+##  Family: binomial  ( logit )
+## Formula: nativeAccuracy ~ group + (1 | pseudoid) + (1 | language:stimulus)
+##    Data: subset(allData, category == 3)
+## Control: glmerControl(optimizer = "bobyqa")
+## 
+##      AIC      BIC   logLik deviance df.resid 
+##   2796.1   2818.9  -1394.1   2788.1     2204 
+## 
+## Scaled residuals: 
+##     Min      1Q  Median      3Q     Max 
+## -2.2506 -1.0714  0.5706  0.7231  1.6491 
+## 
+## Random effects:
+##  Groups            Name        Variance Std.Dev.
+##  language:stimulus (Intercept) 0.1261   0.3551  
+##  pseudoid          (Intercept) 0.2778   0.5271  
+## Number of obs: 2208, groups:  language:stimulus, 48; pseudoid, 46
+## 
+## Fixed effects:
+##             Estimate Std. Error z value Pr(>|z|)    
+## (Intercept)  0.68779    0.13817   4.978 6.43e-07 ***
+## groupSC     -0.07333    0.18119  -0.405    0.686    
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Correlation of Fixed Effects:
+##         (Intr)
+## groupSC -0.656
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{Anova}\NormalTok{(cat3)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Analysis of Deviance Table (Type II Wald chisquare tests)
+## 
+## Response: nativeAccuracy
+##        Chisq Df Pr(>Chisq)
+## group 0.1638  1     0.6857
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{catThree\_EB }\OtherTok{\textless{}{-}} \FunctionTok{subset}\NormalTok{(allData, category }\SpecialCharTok{==} \DecValTok{3} \SpecialCharTok{\&}\NormalTok{ group }\SpecialCharTok{==} \StringTok{\textquotesingle{}EB\textquotesingle{}}\NormalTok{)}
+\FunctionTok{binom.test}\NormalTok{(}\FunctionTok{sum}\NormalTok{(catThree\_EB}\SpecialCharTok{$}\NormalTok{grade), }\FunctionTok{nrow}\NormalTok{(catThree\_EB), }\AttributeTok{p =}\NormalTok{ .}\DecValTok{5}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Exact binomial test
+## 
+## data:  sum(catThree_EB$grade) and nrow(catThree_EB)
+## number of successes = 722, number of trials = 1104, p-value < 2.2e-16
+## alternative hypothesis: true probability of success is not equal to 0.5
+## 95 percent confidence interval:
+##  0.6250906 0.6820569
+## sample estimates:
+## probability of success 
+##              0.6539855
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{catThree\_SC }\OtherTok{\textless{}{-}} \FunctionTok{subset}\NormalTok{(allData, category }\SpecialCharTok{==} \DecValTok{3} \SpecialCharTok{\&}\NormalTok{ group }\SpecialCharTok{==} \StringTok{\textquotesingle{}SC\textquotesingle{}}\NormalTok{)}
+\FunctionTok{binom.test}\NormalTok{(}\FunctionTok{sum}\NormalTok{(catThree\_SC}\SpecialCharTok{$}\NormalTok{grade), }\FunctionTok{nrow}\NormalTok{(catThree\_SC), }\AttributeTok{p =}\NormalTok{ .}\DecValTok{5}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Exact binomial test
+## 
+## data:  sum(catThree_SC$grade) and nrow(catThree_SC)
+## number of successes = 703, number of trials = 1104, p-value < 2.2e-16
+## alternative hypothesis: true probability of success is not equal to 0.5
+## 95 percent confidence interval:
+##  0.6076187 0.6652007
+## sample estimates:
+## probability of success 
+##              0.6367754
+\end{verbatim}
+
+\hypertarget{category-4-loudness}{%
+\subsubsection{Category 4: loudness}\label{category-4-loudness}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{cat4 }\OtherTok{=} \FunctionTok{glmer}\NormalTok{(nativeAccuracy }\SpecialCharTok{\textasciitilde{}}\NormalTok{ group }\SpecialCharTok{+}
+\NormalTok{        (}\DecValTok{1} \SpecialCharTok{|}\NormalTok{ pseudoid) }\SpecialCharTok{+}\NormalTok{ (}\DecValTok{1} \SpecialCharTok{|}\NormalTok{ language}\SpecialCharTok{:}\NormalTok{stimulus),}
+      \FunctionTok{subset}\NormalTok{(allData, category }\SpecialCharTok{==} \DecValTok{4}\NormalTok{),}
+      \AttributeTok{family =}\NormalTok{ binomial,}
+      \AttributeTok{control=}\FunctionTok{glmerControl}\NormalTok{(}\AttributeTok{optimizer=}\StringTok{"bobyqa"}\NormalTok{))}
+
+\FunctionTok{summary}\NormalTok{(cat4)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Generalized linear mixed model fit by maximum likelihood (Laplace
+##   Approximation) [glmerMod]
+##  Family: binomial  ( logit )
+## Formula: nativeAccuracy ~ group + (1 | pseudoid) + (1 | language:stimulus)
+##    Data: subset(allData, category == 4)
+## Control: glmerControl(optimizer = "bobyqa")
+## 
+##      AIC      BIC   logLik deviance df.resid 
+##   1129.1   1148.0   -560.5   1121.1      824 
+## 
+## Scaled residuals: 
+##     Min      1Q  Median      3Q     Max 
+## -1.4737 -0.8524 -0.7020  1.0583  1.5467 
+## 
+## Random effects:
+##  Groups            Name        Variance Std.Dev.
+##  pseudoid          (Intercept) 0.0903   0.3005  
+##  language:stimulus (Intercept) 0.1268   0.3561  
+## Number of obs: 828, groups:  pseudoid, 46; language:stimulus, 18
+## 
+## Fixed effects:
+##             Estimate Std. Error z value Pr(>|z|)  
+## (Intercept)  -0.3471     0.1464  -2.371   0.0177 *
+## groupSC       0.1235     0.1690   0.731   0.4650  
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Correlation of Fixed Effects:
+##         (Intr)
+## groupSC -0.580
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{Anova}\NormalTok{(cat4)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Analysis of Deviance Table (Type II Wald chisquare tests)
+## 
+## Response: nativeAccuracy
+##        Chisq Df Pr(>Chisq)
+## group 0.5339  1      0.465
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{catFour\_EB }\OtherTok{\textless{}{-}} \FunctionTok{subset}\NormalTok{(allData, category }\SpecialCharTok{==} \DecValTok{4} \SpecialCharTok{\&}\NormalTok{ group }\SpecialCharTok{==} \StringTok{\textquotesingle{}EB\textquotesingle{}}\NormalTok{)}
+\FunctionTok{binom.test}\NormalTok{(}\FunctionTok{sum}\NormalTok{(catFour\_EB}\SpecialCharTok{$}\NormalTok{grade), }\FunctionTok{nrow}\NormalTok{(catFour\_EB), }\AttributeTok{p =}\NormalTok{ .}\DecValTok{5}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Exact binomial test
+## 
+## data:  sum(catFour_EB$grade) and nrow(catFour_EB)
+## number of successes = 173, number of trials = 414, p-value = 0.0009687
+## alternative hypothesis: true probability of success is not equal to 0.5
+## 95 percent confidence interval:
+##  0.3698935 0.4670376
+## sample estimates:
+## probability of success 
+##              0.4178744
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{catFour\_SC }\OtherTok{\textless{}{-}} \FunctionTok{subset}\NormalTok{(allData, category }\SpecialCharTok{==} \DecValTok{4} \SpecialCharTok{\&}\NormalTok{ group }\SpecialCharTok{==} \StringTok{\textquotesingle{}SC\textquotesingle{}}\NormalTok{)}
+\FunctionTok{binom.test}\NormalTok{(}\FunctionTok{sum}\NormalTok{(catFour\_SC}\SpecialCharTok{$}\NormalTok{grade), }\FunctionTok{nrow}\NormalTok{(catFour\_SC), }\AttributeTok{p =}\NormalTok{ .}\DecValTok{5}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Exact binomial test
+## 
+## data:  sum(catFour_SC$grade) and nrow(catFour_SC)
+## number of successes = 185, number of trials = 414, p-value = 0.03445
+## alternative hypothesis: true probability of success is not equal to 0.5
+## 95 percent confidence interval:
+##  0.3982912 0.4961934
+## sample estimates:
+## probability of success 
+##              0.4468599
+\end{verbatim}
+
+\hypertarget{category-6-velocity}{%
+\subsubsection{Category 6: velocity}\label{category-6-velocity}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{cat6 }\OtherTok{=} \FunctionTok{glmer}\NormalTok{(nativeAccuracy }\SpecialCharTok{\textasciitilde{}}\NormalTok{ group }\SpecialCharTok{+}
+\NormalTok{        (}\DecValTok{1} \SpecialCharTok{|}\NormalTok{ pseudoid) }\SpecialCharTok{+}\NormalTok{ (}\DecValTok{1} \SpecialCharTok{|}\NormalTok{ language}\SpecialCharTok{:}\NormalTok{stimulus),}
+      \FunctionTok{subset}\NormalTok{(allData, category }\SpecialCharTok{==} \DecValTok{6}\NormalTok{),}
+      \AttributeTok{family =}\NormalTok{ binomial,}
+      \AttributeTok{control=}\FunctionTok{glmerControl}\NormalTok{(}\AttributeTok{optimizer=}\StringTok{"bobyqa"}\NormalTok{))}
+
+\FunctionTok{summary}\NormalTok{(cat6)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Generalized linear mixed model fit by maximum likelihood (Laplace
+##   Approximation) [glmerMod]
+##  Family: binomial  ( logit )
+## Formula: nativeAccuracy ~ group + (1 | pseudoid) + (1 | language:stimulus)
+##    Data: subset(allData, category == 6)
+## Control: glmerControl(optimizer = "bobyqa")
+## 
+##      AIC      BIC   logLik deviance df.resid 
+##   1747.6   1768.5   -869.8   1739.6     1376 
+## 
+## Scaled residuals: 
+##     Min      1Q  Median      3Q     Max 
+## -2.1109 -1.0682  0.5658  0.7076  2.2316 
+## 
+## Random effects:
+##  Groups            Name        Variance Std.Dev.
+##  pseudoid          (Intercept) 0.1543   0.3928  
+##  language:stimulus (Intercept) 0.2871   0.5358  
+## Number of obs: 1380, groups:  pseudoid, 46; language:stimulus, 30
+## 
+## Fixed effects:
+##             Estimate Std. Error z value Pr(>|z|)    
+## (Intercept)  0.66885    0.15262   4.382 1.17e-05 ***
+## groupSC     -0.02258    0.16517  -0.137    0.891    
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Correlation of Fixed Effects:
+##         (Intr)
+## groupSC -0.540
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{Anova}\NormalTok{(cat6)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Analysis of Deviance Table (Type II Wald chisquare tests)
+## 
+## Response: nativeAccuracy
+##        Chisq Df Pr(>Chisq)
+## group 0.0187  1     0.8912
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{catSix\_EB }\OtherTok{\textless{}{-}} \FunctionTok{subset}\NormalTok{(allData, category }\SpecialCharTok{==} \DecValTok{6} \SpecialCharTok{\&}\NormalTok{ group }\SpecialCharTok{==} \StringTok{\textquotesingle{}EB\textquotesingle{}}\NormalTok{)}
+\FunctionTok{binom.test}\NormalTok{(}\FunctionTok{sum}\NormalTok{(catSix\_EB}\SpecialCharTok{$}\NormalTok{grade), }\FunctionTok{nrow}\NormalTok{(catSix\_EB), }\AttributeTok{p =}\NormalTok{ .}\DecValTok{5}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Exact binomial test
+## 
+## data:  sum(catSix_EB$grade) and nrow(catSix_EB)
+## number of successes = 448, number of trials = 690, p-value = 3.764e-15
+## alternative hypothesis: true probability of success is not equal to 0.5
+## 95 percent confidence interval:
+##  0.6123655 0.6849022
+## sample estimates:
+## probability of success 
+##              0.6492754
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{catSix\_SC }\OtherTok{\textless{}{-}} \FunctionTok{subset}\NormalTok{(allData, category }\SpecialCharTok{==} \DecValTok{6} \SpecialCharTok{\&}\NormalTok{ group }\SpecialCharTok{==} \StringTok{\textquotesingle{}SC\textquotesingle{}}\NormalTok{)}
+\FunctionTok{binom.test}\NormalTok{(}\FunctionTok{sum}\NormalTok{(catSix\_SC}\SpecialCharTok{$}\NormalTok{grade), }\FunctionTok{nrow}\NormalTok{(catSix\_SC), }\AttributeTok{p =}\NormalTok{ .}\DecValTok{5}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Exact binomial test
+## 
+## data:  sum(catSix_SC$grade) and nrow(catSix_SC)
+## number of successes = 444, number of trials = 690, p-value = 4.312e-14
+## alternative hypothesis: true probability of success is not equal to 0.5
+## 95 percent confidence interval:
+##  0.6064614 0.6792620
+## sample estimates:
+## probability of success 
+##              0.6434783
+\end{verbatim}
+
+\hypertarget{category-7-movement}{%
+\subsubsection{Category 7: movement}\label{category-7-movement}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{cat7 }\OtherTok{=} \FunctionTok{glmer}\NormalTok{(nativeAccuracy }\SpecialCharTok{\textasciitilde{}}\NormalTok{ group }\SpecialCharTok{+}
+\NormalTok{        (}\DecValTok{1} \SpecialCharTok{|}\NormalTok{ pseudoid) }\SpecialCharTok{+}\NormalTok{ (}\DecValTok{1} \SpecialCharTok{|}\NormalTok{ language}\SpecialCharTok{:}\NormalTok{stimulus),}
+      \FunctionTok{subset}\NormalTok{(allData, category }\SpecialCharTok{==} \DecValTok{7}\NormalTok{),}
+      \AttributeTok{family =}\NormalTok{ binomial,}
+      \AttributeTok{control=}\FunctionTok{glmerControl}\NormalTok{(}\AttributeTok{optimizer=}\StringTok{"bobyqa"}\NormalTok{))}
+
+\FunctionTok{summary}\NormalTok{(cat7)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Generalized linear mixed model fit by maximum likelihood (Laplace
+##   Approximation) [glmerMod]
+##  Family: binomial  ( logit )
+## Formula: nativeAccuracy ~ group + (1 | pseudoid) + (1 | language:stimulus)
+##    Data: subset(allData, category == 7)
+## Control: glmerControl(optimizer = "bobyqa")
+## 
+##      AIC      BIC   logLik deviance df.resid 
+##   2559.5   2582.0  -1275.8   2551.5     2020 
+## 
+## Scaled residuals: 
+##     Min      1Q  Median      3Q     Max 
+## -2.5467 -1.0301  0.5537  0.7176  1.9090 
+## 
+## Random effects:
+##  Groups            Name        Variance Std.Dev.
+##  pseudoid          (Intercept) 0.40642  0.6375  
+##  language:stimulus (Intercept) 0.08482  0.2912  
+## Number of obs: 2024, groups:  pseudoid, 46; language:stimulus, 44
+## 
+## Fixed effects:
+##             Estimate Std. Error z value Pr(>|z|)    
+## (Intercept)   0.6586     0.1564   4.211 2.54e-05 ***
+## groupSC      -0.1062     0.2119  -0.501    0.616    
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Correlation of Fixed Effects:
+##         (Intr)
+## groupSC -0.679
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{Anova}\NormalTok{(cat7)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Analysis of Deviance Table (Type II Wald chisquare tests)
+## 
+## Response: nativeAccuracy
+##       Chisq Df Pr(>Chisq)
+## group 0.251  1     0.6164
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{catSeven\_EB }\OtherTok{\textless{}{-}} \FunctionTok{subset}\NormalTok{(allData, category }\SpecialCharTok{==} \DecValTok{7} \SpecialCharTok{\&}\NormalTok{ group }\SpecialCharTok{==} \StringTok{\textquotesingle{}EB\textquotesingle{}}\NormalTok{)}
+\FunctionTok{binom.test}\NormalTok{(}\FunctionTok{sum}\NormalTok{(catSeven\_EB}\SpecialCharTok{$}\NormalTok{grade), }\FunctionTok{nrow}\NormalTok{(catSeven\_EB), }\AttributeTok{p =}\NormalTok{ .}\DecValTok{5}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Exact binomial test
+## 
+## data:  sum(catSeven_EB$grade) and nrow(catSeven_EB)
+## number of successes = 653, number of trials = 1012, p-value < 2.2e-16
+## alternative hypothesis: true probability of success is not equal to 0.5
+## 95 percent confidence interval:
+##  0.6148969 0.6747690
+## sample estimates:
+## probability of success 
+##              0.6452569
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{catSeven\_SC }\OtherTok{\textless{}{-}} \FunctionTok{subset}\NormalTok{(allData, category }\SpecialCharTok{==} \DecValTok{7} \SpecialCharTok{\&}\NormalTok{ group }\SpecialCharTok{==} \StringTok{\textquotesingle{}SC\textquotesingle{}}\NormalTok{)}
+\FunctionTok{binom.test}\NormalTok{(}\FunctionTok{sum}\NormalTok{(catSeven\_SC}\SpecialCharTok{$}\NormalTok{grade), }\FunctionTok{nrow}\NormalTok{(catSeven\_SC), }\AttributeTok{p =}\NormalTok{ .}\DecValTok{5}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Exact binomial test
+## 
+## data:  sum(catSeven_SC$grade) and nrow(catSeven_SC)
+## number of successes = 631, number of trials = 1012, p-value = 3.633e-15
+## alternative hypothesis: true probability of success is not equal to 0.5
+## 95 percent confidence interval:
+##  0.5928484 0.6534663
+## sample estimates:
+## probability of success 
+##              0.6235178
+\end{verbatim}
+
+\hypertarget{category-8-space}{%
+\subsubsection{Category 8: space}\label{category-8-space}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{cat8 }\OtherTok{=} \FunctionTok{glmer}\NormalTok{(nativeAccuracy }\SpecialCharTok{\textasciitilde{}}\NormalTok{ group }\SpecialCharTok{+}
+\NormalTok{        (}\DecValTok{1} \SpecialCharTok{|}\NormalTok{ pseudoid) }\SpecialCharTok{+}\NormalTok{ (}\DecValTok{1} \SpecialCharTok{|}\NormalTok{ language}\SpecialCharTok{:}\NormalTok{stimulus),}
+      \FunctionTok{subset}\NormalTok{(allData, category }\SpecialCharTok{==} \DecValTok{8}\NormalTok{),}
+      \AttributeTok{family =}\NormalTok{ binomial,}
+      \AttributeTok{control=}\FunctionTok{glmerControl}\NormalTok{(}\AttributeTok{optimizer=}\StringTok{"bobyqa"}\NormalTok{))}
+
+\FunctionTok{summary}\NormalTok{(cat8)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Generalized linear mixed model fit by maximum likelihood (Laplace
+##   Approximation) [glmerMod]
+##  Family: binomial  ( logit )
+## Formula: nativeAccuracy ~ group + (1 | pseudoid) + (1 | language:stimulus)
+##    Data: subset(allData, category == 8)
+## Control: glmerControl(optimizer = "bobyqa")
+## 
+##      AIC      BIC   logLik deviance df.resid 
+##   2232.2   2253.9  -1112.1   2224.2     1652 
+## 
+## Scaled residuals: 
+##     Min      1Q  Median      3Q     Max 
+## -1.8805 -1.0264  0.6631  0.8225  1.7277 
+## 
+## Random effects:
+##  Groups            Name        Variance Std.Dev.
+##  pseudoid          (Intercept) 0.1350   0.3674  
+##  language:stimulus (Intercept) 0.1631   0.4039  
+## Number of obs: 1656, groups:  pseudoid, 46; language:stimulus, 36
+## 
+## Fixed effects:
+##             Estimate Std. Error z value Pr(>|z|)  
+## (Intercept)   0.2261     0.1250   1.809   0.0704 .
+## groupSC       0.1276     0.1492   0.855   0.3925  
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Correlation of Fixed Effects:
+##         (Intr)
+## groupSC -0.594
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{Anova}\NormalTok{(cat8)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Analysis of Deviance Table (Type II Wald chisquare tests)
+## 
+## Response: nativeAccuracy
+##        Chisq Df Pr(>Chisq)
+## group 0.7313  1     0.3925
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{catEight\_EB }\OtherTok{\textless{}{-}} \FunctionTok{subset}\NormalTok{(allData, category }\SpecialCharTok{==} \DecValTok{8} \SpecialCharTok{\&}\NormalTok{ group }\SpecialCharTok{==} \StringTok{\textquotesingle{}EB\textquotesingle{}}\NormalTok{)}
+\FunctionTok{binom.test}\NormalTok{(}\FunctionTok{sum}\NormalTok{(catEight\_EB}\SpecialCharTok{$}\NormalTok{grade), }\FunctionTok{nrow}\NormalTok{(catEight\_EB), }\AttributeTok{p =}\NormalTok{ .}\DecValTok{5}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Exact binomial test
+## 
+## data:  sum(catEight_EB$grade) and nrow(catEight_EB)
+## number of successes = 458, number of trials = 828, p-value = 0.002479
+## alternative hypothesis: true probability of success is not equal to 0.5
+## 95 percent confidence interval:
+##  0.5185339 0.5873668
+## sample estimates:
+## probability of success 
+##              0.5531401
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{catEight\_SC }\OtherTok{\textless{}{-}} \FunctionTok{subset}\NormalTok{(allData, category }\SpecialCharTok{==} \DecValTok{8} \SpecialCharTok{\&}\NormalTok{ group }\SpecialCharTok{==} \StringTok{\textquotesingle{}SC\textquotesingle{}}\NormalTok{)}
+\FunctionTok{binom.test}\NormalTok{(}\FunctionTok{sum}\NormalTok{(catEight\_SC}\SpecialCharTok{$}\NormalTok{grade), }\FunctionTok{nrow}\NormalTok{(catEight\_SC), }\AttributeTok{p =}\NormalTok{ .}\DecValTok{5}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Exact binomial test
+## 
+## data:  sum(catEight_SC$grade) and nrow(catEight_SC)
+## number of successes = 482, number of trials = 828, p-value = 2.581e-06
+## alternative hypothesis: true probability of success is not equal to 0.5
+## 95 percent confidence interval:
+##  0.5476847 0.6159799
+## sample estimates:
+## probability of success 
+##              0.5821256
+\end{verbatim}
+
+\hypertarget{category-9-distance}{%
+\subsubsection{Category 9: distance}\label{category-9-distance}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{cat9 }\OtherTok{=} \FunctionTok{glmer}\NormalTok{(nativeAccuracy }\SpecialCharTok{\textasciitilde{}}\NormalTok{ group }\SpecialCharTok{+}
+\NormalTok{        (}\DecValTok{1} \SpecialCharTok{|}\NormalTok{ pseudoid) }\SpecialCharTok{+}\NormalTok{ (}\DecValTok{1} \SpecialCharTok{|}\NormalTok{ language}\SpecialCharTok{:}\NormalTok{stimulus),}
+      \FunctionTok{subset}\NormalTok{(allData, category }\SpecialCharTok{==} \DecValTok{9}\NormalTok{),}
+      \AttributeTok{family =}\NormalTok{ binomial,}
+      \AttributeTok{control=}\FunctionTok{glmerControl}\NormalTok{(}\AttributeTok{optimizer=}\StringTok{"bobyqa"}\NormalTok{))}
+
+\FunctionTok{summary}\NormalTok{(cat9)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Generalized linear mixed model fit by maximum likelihood (Laplace
+##   Approximation) [glmerMod]
+##  Family: binomial  ( logit )
+## Formula: nativeAccuracy ~ group + (1 | pseudoid) + (1 | language:stimulus)
+##    Data: subset(allData, category == 9)
+## Control: glmerControl(optimizer = "bobyqa")
+## 
+##      AIC      BIC   logLik deviance df.resid 
+##   2540.8   2563.2  -1266.4   2532.8     2020 
+## 
+## Scaled residuals: 
+##     Min      1Q  Median      3Q     Max 
+## -2.4887 -1.0682  0.5622  0.6936  1.3663 
+## 
+## Random effects:
+##  Groups            Name        Variance Std.Dev.
+##  pseudoid          (Intercept) 0.35939  0.5995  
+##  language:stimulus (Intercept) 0.03646  0.1909  
+## Number of obs: 2024, groups:  pseudoid, 46; language:stimulus, 44
+## 
+## Fixed effects:
+##             Estimate Std. Error z value Pr(>|z|)    
+## (Intercept)   0.6178     0.1452   4.255 2.09e-05 ***
+## groupSC       0.1153     0.2022   0.570    0.569    
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Correlation of Fixed Effects:
+##         (Intr)
+## groupSC -0.689
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{Anova}\NormalTok{(cat9)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Analysis of Deviance Table (Type II Wald chisquare tests)
+## 
+## Response: nativeAccuracy
+##        Chisq Df Pr(>Chisq)
+## group 0.3251  1     0.5686
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{catNine\_EB }\OtherTok{\textless{}{-}} \FunctionTok{subset}\NormalTok{(allData, category }\SpecialCharTok{==} \DecValTok{9} \SpecialCharTok{\&}\NormalTok{ group }\SpecialCharTok{==} \StringTok{\textquotesingle{}EB\textquotesingle{}}\NormalTok{)}
+\FunctionTok{binom.test}\NormalTok{(}\FunctionTok{sum}\NormalTok{(catNine\_EB}\SpecialCharTok{$}\NormalTok{grade), }\FunctionTok{nrow}\NormalTok{(catNine\_EB), }\AttributeTok{p =}\NormalTok{ .}\DecValTok{5}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Exact binomial test
+## 
+## data:  sum(catNine_EB$grade) and nrow(catNine_EB)
+## number of successes = 649, number of trials = 1012, p-value < 2.2e-16
+## alternative hypothesis: true probability of success is not equal to 0.5
+## 95 percent confidence interval:
+##  0.6108832 0.6709006
+## sample estimates:
+## probability of success 
+##              0.6413043
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{catNine\_SC }\OtherTok{\textless{}{-}} \FunctionTok{subset}\NormalTok{(allData, category }\SpecialCharTok{==} \DecValTok{9} \SpecialCharTok{\&}\NormalTok{ group }\SpecialCharTok{==} \StringTok{\textquotesingle{}SC\textquotesingle{}}\NormalTok{)}
+\FunctionTok{binom.test}\NormalTok{(}\FunctionTok{sum}\NormalTok{(catNine\_SC}\SpecialCharTok{$}\NormalTok{grade), }\FunctionTok{nrow}\NormalTok{(catNine\_SC), }\AttributeTok{p =}\NormalTok{ .}\DecValTok{5}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Exact binomial test
+## 
+## data:  sum(catNine_SC$grade) and nrow(catNine_SC)
+## number of successes = 668, number of trials = 1012, p-value < 2.2e-16
+## alternative hypothesis: true probability of success is not equal to 0.5
+## 95 percent confidence interval:
+##  0.6299678 0.6892556
+## sample estimates:
+## probability of success 
+##              0.6600791
+\end{verbatim}
+
+\end{document}

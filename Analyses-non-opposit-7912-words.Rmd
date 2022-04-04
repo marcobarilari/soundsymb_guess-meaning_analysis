@@ -156,7 +156,7 @@ ggplot(data = categoryAccuracy_tidy,
 
 ```{r}
 
-nativeResult <- glmer(nativeAccuracy ~ category + group + category*group +
+nativeResult <- glmer(nativeAccuracy ~ category + group + session + category*group +
         (1 | pseudoid) + (1 | language:stimulus), 
       data = allData,
       family = binomial,
