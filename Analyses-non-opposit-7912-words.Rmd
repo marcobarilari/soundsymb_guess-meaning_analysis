@@ -1,0 +1,178 @@
+---
+title: "Semantic Processing in SC and EB - Analysis for 7912 words after excluding opposite meaning words"
+author: "Minah Chang"
+date: "1 March, 2022"
+output: html_document
+---
+
+### Data preparation
+
+From the data, "distractor trials" are discarded and not considered for further analyses.
+
+* All Distractor trials were removed (4186 values)
+
+```{r setup, include=FALSE}
+# Load and install (if missing) the recquired packages
+list.of.packages <- c("tidyverse", 
+                      "knitr", 
+                      "reshape2", 
+                      "lme4",
+                      "nlme",
+                      "car")
+new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
+if(length(new.packages)) install.packages(new.packages)
+
+lapply(list.of.packages, library, character.only = TRUE)
+
+# set script folder as working dir
+setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
+
+# set to true to show the code chunk
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### Load processed and merged data
+
+The header column is organized as follows:
+
+* 1. pseudoid
+* 2. group (EB or SC)
+* 3. session (matlab or gorilla)
+* 4. category (integer 1, 3, 4, 6-9)
+    + category 1: size
+    + category 3: brightness
+    + category 4: loudness
+    + category 6: velocity
+    + category 7: movement
+    + category 8: space
+    + category 9: distance
+* 5. wordcode
+* 6. language
+* 7. stimulus
+* 8. meaning
+* 9. value (good or goodop)
+* 10. response
+* 11. grade (1 if correct, 0 if incorrect)
+
+*Native accuracy: given that some words in specific native languages groups can "sound" with the opposite meaning as presented in Tzeng (2017). In this analysis, these stimuli of opposite meaning words are excluded, leaving a total of 7912 stimuli instead of 12512 (4600 values have been removed).
+
+```{r}
+
+allData<-read.csv("data/allData7912.csv", header = TRUE)
+
+```
+
+### Analysis
+
+### Compute the raw accuracy
+
+```{r}
+
+allData$rawAccuracy <- as.integer(allData$response == allData$meaning)
+
+allData$nativeAccuracy <- ifelse(allData$value == 'goodop', 
+                                 abs(allData$rawAccuracy - 1), 
+                                 allData$rawAccuracy + 0)
+
+allData %>%
+  group_by(group) %>%
+  summarize(raw_acc = mean(rawAccuracy), 
+            native_acc = mean(nativeAccuracy), 
+            .groups = 'keep')
+
+```
+
+### Accuracy per group and category
+
+Category 1: size
+Category 3: brightness
+Category 4: loudness
+Category 6: velocity
+Category 7: movement
+Category 8: space
+Category 9: distance
+
+```{r}
+
+
+categoryAccuracy_sub <- allData %>%
+  group_by(group) %>%
+  summarize(rawAccuracy_mean = mean(rawAccuracy), nativeAccuracy_mean = mean(nativeAccuracy), 
+            rawAccuracy_sd = sd(rawAccuracy), nativeAccuracy_sd = sd(nativeAccuracy),
+            n = n(),
+            rawAccuracy_se = rawAccuracy_sd / sqrt(n), nativeAccuracy_se = nativeAccuracy_sd / sqrt(n),
+            .groups = 'keep')
+
+print(categoryAccuracy_sub)
+
+```
+
+## Plot of the native accuracy per category.
+
+```{r}
+
+categoryAccuracy_tidy <- allData %>%
+  group_by(group, category) %>%
+  summarize(rawAccuracy_mean = mean(rawAccuracy), nativeAccuracy_mean = mean(nativeAccuracy), 
+            rawAccuracy_sd = sd(rawAccuracy), nativeAccuracy_sd = sd(nativeAccuracy),
+            n = n(),
+            rawAccuracy_se = rawAccuracy_sd / sqrt(n), nativeAccuracy_se = nativeAccuracy_sd / sqrt(n),
+            .groups = 'keep')
+
+print(categoryAccuracy_tidy)
+
+ggplot(data = categoryAccuracy_tidy, 
+       aes(x = as.factor(category), y = nativeAccuracy_mean, fill = group)) +
+  geom_bar(stat="identity", position=position_dodge()) +
+  theme_classic() +
+  scale_fill_manual(values=c('grey52','darkorange1'), labels=c('Blind', 'Sighted')) +
+  scale_y_continuous(limits=c(0, 0.85), breaks=seq(0, 0.85, 0.1), expand = c(0,0)) +
+  scale_x_discrete(limits=c("1", "3", "4", "6", "7", "8", "9"),
+                   labels = c("size", "brightness", "loudness", "velocity", "movement", "space", "distance")) + 
+  geom_errorbar(aes(ymin = nativeAccuracy_mean - nativeAccuracy_se,
+                    ymax = nativeAccuracy_mean + nativeAccuracy_se),
+                width = .08,
+                position = position_dodge(.9)) +
+  labs(x="Category", y="Accuracy") +
+  ggtitle("Native Accuracy") +
+  theme(
+    text=element_text(size=12), 
+    axis.line = element_line(size = 0.6), 
+    axis.text.x = element_text(size=10,colour="black",
+                               angle = 13,
+                               vjust = .5, 
+                               hjust = 0.5), 
+    axis.text.y = element_text(size=10, colour='black'), 
+    legend.title=element_blank())+
+  geom_hline(yintercept=c(0.5), linetype="dashed", colour="black", size=0.3)
+
+```
+
+### Are blind and sighted controls better than chance at detemining the meaning of the presented foreing words? Is there any difference between the two groups?
+
+*We input main effect of semantic category and group and the interaction bewteen the two. We input as well random intercept by subject, item (each stimulus) and language (each language of the foreign words)
+
+### Native Accuracy
+
+```{r}
+
+nativeResult <- glmer(nativeAccuracy ~ category + group + session + category*group +
+        (1 | pseudoid) + (1 | language:stimulus), 
+      data = allData,
+      family = binomial,
+      control = glmerControl(optimizer="bobyqa"))
+
+summary(nativeResult)
+
+Anova(nativeResult)
+
+# calculate odd ratio and confidence intervals
+se <- sqrt(diag(vcov(nativeResult)))
+tab <- cbind(Est = fixef(nativeResult),
+             LL = fixef(nativeResult) - 1.96 * se,
+             UL = fixef(nativeResult) + 1.96 * se)
+
+# print odd-ratio and confidence interval
+print(exp(tab[2:4,]), digits=3)
+
+```

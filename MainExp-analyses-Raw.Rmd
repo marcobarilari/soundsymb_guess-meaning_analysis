@@ -1,0 +1,340 @@
+---
+title: "Semantic Processing in SC and EB - raw accuracy"
+author: "Minah Chang"
+date: "4 March, 2022"
+output: html_document
+---
+
+### Data preparation
+
+From the data, "distractor trials" are discarded and not considered for further analyses.
+
+* All Distractor trials were removed (4186 values)
+
+```{r setup, include=FALSE}
+# Load and install (if missing) the recquired packages
+list.of.packages <- c("tidyverse", 
+                      "knitr", 
+                      "reshape2", 
+                      "lme4",
+                      "nlme",
+                      "car")
+new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
+if(length(new.packages)) install.packages(new.packages)
+
+lapply(list.of.packages, library, character.only = TRUE)
+
+# set script folder as working dir
+setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
+
+# set to true to show the code chunk
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### Load processed and merged data
+
+The header column is organized as follows:
+
+* 1. pseudoid
+* 2. group (EB or SC)
+* 3. session (matlab or gorilla)
+* 4. category (integer 1, 3, 4, 6-9)
+    + category 1: size
+    + category 3: brightness
+    + category 4: loudness
+    + category 6: velocity
+    + category 7: movement
+    + category 8: space
+    + category 9: distance
+* 5. wordcode
+* 6. language
+* 7. stimulus
+* 8. meaning
+* 9. value (good or goodop)
+* 10. response
+* 11. grade (1 if correct, 0 if incorrect)
+
+
+```{r}
+
+allData<-read.csv("data/allData.csv", header = TRUE)
+
+allData$rawAccuracy <- as.integer(allData$response == allData$meaning)
+
+allData$nativeAccuracy <- ifelse(allData$value == 'goodop', 
+                                 abs(allData$rawAccuracy - 1), 
+                                 allData$rawAccuracy + 0)
+
+```
+
+## Plot of the raw accuracy per category.
+
+```{r}
+
+categoryAccuracy_tidy <- allData %>%
+  group_by(group, category) %>%
+  summarize(rawAccuracy_mean = mean(rawAccuracy), 
+            rawAccuracy_sd = sd(rawAccuracy),
+            n = n(),
+            rawAccuracy_se = rawAccuracy_sd / sqrt(n),
+            .groups = 'keep')
+
+print(categoryAccuracy_tidy)
+
+ggplot(data = categoryAccuracy_tidy, 
+       aes(x = as.factor(category), y = rawAccuracy_mean, fill = group)) +
+  geom_bar(stat="identity", position=position_dodge()) +
+  theme_classic() +
+  scale_fill_manual(values=c('grey52','darkorange1'), labels=c('Blind', 'Sighted')) +
+  scale_y_continuous(limits=c(0, 0.85), breaks=seq(0, 0.85, 0.1), expand = c(0,0)) +
+  scale_x_discrete(limits=c("1", "3", "4", "6", "7", "8", "9"),
+                   labels = c("size", "brightness", "loudness", "velocity", "movement", "space", "distance")) + 
+  geom_errorbar(aes(ymin = rawAccuracy_mean - rawAccuracy_se,
+                    ymax = rawAccuracy_mean + rawAccuracy_se),
+                width = .08,
+                position = position_dodge(.9)) +
+  labs(x="Category", y="Accuracy") +
+  ggtitle("Raw Accuracy") +
+  theme(
+    text=element_text(size=12), 
+    axis.line = element_line(size = 0.6), 
+    axis.text.x = element_text(size=10,colour="black",
+                               angle = 13,
+                               vjust = .5, 
+                               hjust = 0.5), 
+    axis.text.y = element_text(size=10, colour='black'), 
+    legend.title=element_blank())+
+  geom_hline(yintercept=c(0.5), linetype="dashed", colour="black", size=0.3)
+
+```
+
+### Are blind and sighted controls better than chance at detemining the meaning of the presented foreing words? Is there any difference between the two groups?
+
+*We input main effect of semantic category and group and the interaction bewteen the two. We input as well random intercept by subject, item (each stimulus) and language (each language of the foreign words)
+
+### raw Accuracy
+
+```{r}
+
+rawResult <- glmer(rawAccuracy ~ category + group + category*group +
+        (1 | pseudoid) + (1 | language:stimulus), 
+      data = allData,
+      family = binomial,
+      control = glmerControl(optimizer="bobyqa"))
+
+summary(rawResult)
+
+Anova(rawResult)
+
+# calculate odd ratio and confidence intervals
+se <- sqrt(diag(vcov(rawResult)))
+tab <- cbind(Est = fixef(rawResult),
+             LL = fixef(rawResult) - 1.96 * se,
+             UL = fixef(rawResult) + 1.96 * se)
+
+# print odd-ratio and confidence interval
+print(exp(tab[2:4,]), digits=3)
+
+```
+
+There is no significant difference between the performance of two groups in guessing the meaning of words - main effect of group is not significant.
+
+(β = -0.00, SE = 0.11, z = -.0.04, p = .970, odds ratio = 1.00, LL = 0.80, UL = 1.24)
+
+There is no significant difference between the performance of two groups across the symbolic categories 
+
+(β =0.00, SE = 0.01, z =0.03, p = .980, odds ratio = 1.00, LL = 0.98, UL = 1.03)
+
+Chi-square test of independence showed that there was no significant difference between the blind and sighted groups in their ability to guess the meaning of foreign words 
+
+(X2 [1, N = 2] = 0.00, p = .978) 
+
+across all semantic categories 
+
+(X2 [1, N = 2] = 0.00, p = .980).
+
+
+## Post hoc analyses - raw accuracy
+
+### Category 1: size
+
+```{r}
+
+cat1 = glmer(rawAccuracy ~ group +
+        (1 | pseudoid) + (1 | language:stimulus),
+      subset(allData, category == 1),
+      family = binomial,
+      control=glmerControl(optimizer="bobyqa"))
+
+summary(cat1)
+
+Anova(cat1)
+
+catOne_EB <- subset(allData, category == 1 & group == 'EB')
+binom.test(sum(catOne_EB$grade), nrow(catOne_EB), p = .5)
+
+catOne_SC <- subset(allData, category == 1 & group == 'SC')
+binom.test(sum(catOne_SC$grade), nrow(catOne_SC), p = .5)
+
+```
+
+Chi-square test of independence showed that there was no significant difference between the blind and sighted groups in their ability to guess the meaning of foreign words 
+
+(X2 [1, N = 2] = 0.02, p = .880) 
+
+### Category 3: brightness
+
+```{r}
+
+cat3 = glmer(rawAccuracy ~ group +
+        (1 | pseudoid) + (1 | language:stimulus),
+      subset(allData, category == 3),
+      family = binomial,
+      control=glmerControl(optimizer="bobyqa"))
+
+summary(cat3)
+
+Anova(cat3)
+
+catThree_EB <- subset(allData, category == 3 & group == 'EB')
+binom.test(sum(catThree_EB$grade), nrow(catThree_EB), p = .5)
+
+catThree_SC <- subset(allData, category == 3 & group == 'SC')
+binom.test(sum(catThree_SC$grade), nrow(catThree_SC), p = .5)
+
+```
+
+Chi-square test of independence showed that there was no significant difference between the blind and sighted groups in their ability to guess the meaning of foreign words 
+
+(X2 [1, N = 2] = 0.98, p = .322) 
+
+### Category 4: loudness
+
+```{r}
+
+cat4 = glmer(rawAccuracy ~ group +
+        (1 | pseudoid) + (1 | language:stimulus),
+      subset(allData, category == 4),
+      family = binomial,
+      control=glmerControl(optimizer="bobyqa"))
+
+summary(cat4)
+
+Anova(cat4)
+
+catFour_EB <- subset(allData, category == 4 & group == 'EB')
+binom.test(sum(catFour_EB$grade), nrow(catFour_EB), p = .5)
+
+catFour_SC <- subset(allData, category == 4 & group == 'SC')
+binom.test(sum(catFour_SC$grade), nrow(catFour_SC), p = .5)
+
+```
+
+Chi-square test of independence showed that there was no significant difference between the blind and sighted groups in their ability to guess the meaning of foreign words 
+
+(X2 [1, N = 2] = 1.14, p = .285) 
+
+### Category 6: velocity
+
+```{r}
+
+cat6 = glmer(rawAccuracy ~ group +
+        (1 | pseudoid) + (1 | language:stimulus),
+      subset(allData, category == 6),
+      family = binomial,
+      control=glmerControl(optimizer="bobyqa"))
+
+summary(cat6)
+
+Anova(cat6)
+
+catSix_EB <- subset(allData, category == 6 & group == 'EB')
+binom.test(sum(catSix_EB$grade), nrow(catSix_EB), p = .5)
+
+catSix_SC <- subset(allData, category == 6 & group == 'SC')
+binom.test(sum(catSix_SC$grade), nrow(catSix_SC), p = .5)
+
+```
+
+Chi-square test of independence showed that there was no significant difference between the blind and sighted groups in their ability to guess the meaning of foreign words 
+
+(X2 [1, N = 2] = 4.26, p = .039) 
+
+### Category 7: movement
+
+```{r}
+
+cat7 = glmer(rawAccuracy ~ group +
+        (1 | pseudoid) + (1 | language:stimulus),
+      subset(allData, category == 7),
+      family = binomial,
+      control=glmerControl(optimizer="bobyqa"))
+
+summary(cat7)
+
+Anova(cat7)
+
+catSeven_EB <- subset(allData, category == 7 & group == 'EB')
+binom.test(sum(catSeven_EB$grade), nrow(catSeven_EB), p = .5)
+
+catSeven_SC <- subset(allData, category == 7 & group == 'SC')
+binom.test(sum(catSeven_SC$grade), nrow(catSeven_SC), p = .5)
+
+```
+
+Chi-square test of independence showed that there was no significant difference between the blind and sighted groups in their ability to guess the meaning of foreign words 
+
+(X2 [1, N = 2] = 2.20, p = .138) 
+
+### Category 8: space
+
+```{r}
+
+cat8 = glmer(rawAccuracy ~ group +
+        (1 | pseudoid) + (1 | language:stimulus),
+      subset(allData, category == 8),
+      family = binomial,
+      control=glmerControl(optimizer="bobyqa"))
+
+summary(cat8)
+
+Anova(cat8)
+
+catEight_EB <- subset(allData, category == 8 & group == 'EB')
+binom.test(sum(catEight_EB$grade), nrow(catEight_EB), p = .5)
+
+catEight_SC <- subset(allData, category == 8 & group == 'SC')
+binom.test(sum(catEight_SC$grade), nrow(catEight_SC), p = .5)
+
+```
+
+Chi-square test of independence showed that there was no significant difference between the blind and sighted groups in their ability to guess the meaning of foreign words 
+
+(X2 [1, N = 2] = 0.03, p = .862) 
+
+### Category 9: distance
+
+```{r}
+
+cat9 = glmer(rawAccuracy ~ group +
+        (1 | pseudoid) + (1 | language:stimulus),
+      subset(allData, category == 9),
+      family = binomial,
+      control=glmerControl(optimizer="bobyqa"))
+
+summary(cat9)
+
+Anova(cat9)
+
+catNine_EB <- subset(allData, category == 9 & group == 'EB')
+binom.test(sum(catNine_EB$grade), nrow(catNine_EB), p = .5)
+
+catNine_SC <- subset(allData, category == 9 & group == 'SC')
+binom.test(sum(catNine_SC$grade), nrow(catNine_SC), p = .5)
+
+```
+
+Chi-square test of independence showed that there was no significant difference between the blind and sighted groups in their ability to guess the meaning of foreign words 
+
+(X2 [1, N = 2] = 2.13, p = .145)
+
