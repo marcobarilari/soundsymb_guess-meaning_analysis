@@ -1,15 +1,10 @@
 ---
-title: "Semantic Processing in SC and EB - Main Analysis with Native Accuracy"
-author: "Minah Chang"
-date: "2 April, 2022"
+title: "ADD HERE THE FINAL PAPER TITLE"
+author: "Marco Barilari, Minah Chang and Roberto Bottini"
 output:
   pdf_document: default
   html_document: default
 ---
-
-### Data preparation
-
-* All Distractor trials were removed (4186 values) and not considered for further analyses.
 
 ```{r setup, include=FALSE}
 # Load and install (if missing) the recquired packages
@@ -31,14 +26,18 @@ setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+# Data Ananlysys for the paper xxx (under review)
+
+## Data preparation
+
+* All Distractor trials were removed (4186 values) and not considered for further analyses.
+
 ### Load processed and merged data
 
-The header column is organized as follows:
-
-* 1. pseudoid
-* 2. group (EB or SC)
-* 3. session (matlab or gorilla)
-* 4. category (integers 1, 3, 4, 6-9)
+* 1. pseudoid - subject id 
+* 2. group - 'EB' either early or congenital blind, 'SC' sighted controls
+* 3. session - it refers to the experiment version , either 'matlab' or 'gorilla'
+* 4. category [integers 1, 3, 4, 6, 7, 8, 9]
     + category 1: size
     + category 3: brightness
     + category 4: loudness
@@ -46,15 +45,15 @@ The header column is organized as follows:
     + category 7: movement
     + category 8: space
     + category 9: distance
-* 5. wordcode
-* 6. language
-* 7. stimulus
-* 8. meaning
-* 9. value (good or goodop) - *See note below.
-* 10. response
-* 11. grade (1 if correct, 0 if incorrect)
+* 5. wordcode - it refers to the identifier code of each stimulus, the code structure is speaker's gender + lamguage + xxx 
+* 6. language - language of origin of the stimulus
+* 7. stimulus - sound transcription of the stimulus
+* 8. meaning - meaning of the sitmulus refered the general synonim
+* 9. value -  'good' or 'good_op',see note below.
+* 10. response - participants response as generla synonim 
+* 11. grade - response coded as correct (1) or incorrect (0) compared to the 'meaning' column
 
-*Note about native accuracy: given that some words in specific native languages groups can "sound" with the opposite meaning as presented in Tzeng (2017), we recompute the accuracy for those stimuli that in our prestudy were mapped systematically to the opposite meaning. For these subset of stimuli, we consider the response correct if it does not match the original meaning and incorrect if it does. The 9th column "value" indicates whether the accurcy should be calculated as the word's meaning (good), or the opposite meaning (goodop). Raw accuracy rate is calculated without taking into account the value of good or goodop.
+*Note about 'value' header (native accuracy): given that some words in specific native languages groups can "sound" with the opposite meaning as presented in Tzeng et al., (2017), we recompute the accuracy for those stimuli that in our prestudy were mapped systematically to the opposite meaning. For these subset of stimuli, we consider the response correct if it does not match the original meaning and incorrect if it does. The 9th column "value" indicates whether the accurcy should be calculated as the word's meaning (good), or the opposite meaning (goodop). Raw accuracy rate is calculated without taking into account the value of good or goodop.
 
 ```{r}
 
@@ -62,7 +61,7 @@ allData<-read.csv("data/allData.csv", header = TRUE)
 
 ```
 
-Check that all the participants have the same number of responses per category
+### Check that all the participants have the same number of responses per category
 
 ```{r}
 
@@ -74,9 +73,9 @@ allData %>%
 
 ```
 
-### Analysis
+## Descriptive analysis
 
-### Compute the native and raw accuracy
+### Compute the over all native and raw accuracy
 
 ```{r}
 
@@ -94,80 +93,100 @@ allData %>%
 ```
 
 
-### Accuracy per group and category
-
-Category 1: size
-Category 3: brightness
-Category 4: loudness
-Category 6: velocity
-Category 7: movement
-Category 8: space
-Category 9: distance
+### Accuracy per subjects and category 
 
 ```{r}
 
-categoryAccuracy_wide <- allData %>%
-  group_by(group) %>%
+categoryAccuracySubj_tidy <- allData %>%
+  group_by(pseudoid, group, category) %>%
   summarize(rawAccuracy_mean = mean(rawAccuracy), nativeAccuracy_mean = mean(nativeAccuracy), 
             rawAccuracy_sd = sd(rawAccuracy), nativeAccuracy_sd = sd(nativeAccuracy),
             n = n(),
             rawAccuracy_se = rawAccuracy_sd / sqrt(n), nativeAccuracy_se = nativeAccuracy_sd / sqrt(n),
             .groups = 'keep')
 
-print(categoryAccuracy_wide)
+print(categoryAccuracySubj_tidy)
 
 ```
 
-## Plot of the native accuracy per category.
+### Accuracy per group and category 
+
+```{r}
+categoryAccuracyGroup_tidy <- categoryAccuracySubj_tidy %>%
+  group_by(group, category) %>%
+  summarize(nativeAccuracy_mean = mean(nativeAccuracy_mean),
+            nativeAccuracy_sd = sd(nativeAccuracy_mean),
+            n = n(),
+            nativeAccuracy_se = nativeAccuracy_sd / sqrt(n),
+            .groups = 'keep')
+
+print(categoryAccuracyGroup_tidy)
+
+```
+
+### Plot of the native accuracy per category.
 
 ```{r}
 
-#allData2 <- subset(allData, session == 'matlab')
-  
-  
-  
-categoryAccuracy_tidy <- allData %>%
-  group_by(group, category) %>%
-  summarize(rawAccuracy_mean = mean(rawAccuracy), nativeAccuracy_mean = mean(nativeAccuracy), 
-            rawAccuracy_sd = sd(rawAccuracy), nativeAccuracy_sd = sd(nativeAccuracy),
-            n = n(),
-            rawAccuracy_se = rawAccuracy_sd / sqrt(n), nativeAccuracy_se = nativeAccuracy_sd / sqrt(n),
-            .groups = 'keep')
-
-print(categoryAccuracy_tidy)
-
-ggplot(data = categoryAccuracy_tidy, 
-       aes(x = as.factor(category), y = nativeAccuracy_mean, fill = group)) +
-  geom_bar(stat="identity", position=position_dodge()) +
+ggplot() +
+  geom_jitter(data = categoryAccuracySubj_tidy, 
+              aes(x = as.factor(category), 
+                  y = nativeAccuracy_mean, 
+                  color = group),
+              position = position_jitterdodge(),
+              shape = 1,
+              size = 2.5,
+              stroke = 1,
+              alpha = .5,
+              show.legend = F) +
+  geom_errorbar(data = categoryAccuracyGroup_tidy,
+                aes(y = nativeAccuracy_mean,
+                    x = as.factor(category),
+                    ymin = nativeAccuracy_mean - nativeAccuracy_se,
+                    ymax = nativeAccuracy_mean + nativeAccuracy_se,
+                    color = group),
+                width = .08,
+                alpha = .6,
+                position = position_jitterdodge(0),
+                show.legend = F) +
+  geom_point(data = categoryAccuracyGroup_tidy,
+              aes(y = nativeAccuracy_mean,
+                  x = as.factor(category),
+                  color = group),
+              position = position_jitterdodge(0),
+              shape = 18,
+              size = 6,
+              alpha = .8) +
   theme_classic() +
-  scale_fill_manual(values=c('grey52','darkorange1'), labels=c('Blind', 'Sighted')) +
-  scale_y_continuous(limits=c(0, 0.85), breaks=seq(0, 0.85, 0.1), expand = c(0,0)) +
+  scale_color_manual(values=c('darkblue','darkorange1'), labels=c('Blind', 'Sighted')) +
+  scale_y_continuous(limits=c(0, 1), breaks=seq(0, 1, 0.10), expand = c(0,0)) +
   scale_x_discrete(limits=c("1", "3", "4", "6", "7", "8", "9"),
                    labels = c("size", "brightness", "loudness", "velocity", "movement", "space", "distance")) + 
-  geom_errorbar(aes(ymin = nativeAccuracy_mean - nativeAccuracy_se,
-                    ymax = nativeAccuracy_mean + nativeAccuracy_se),
-                width = .08,
-                position = position_dodge(.9)) +
   labs(x="Category", y="Accuracy") +
   ggtitle("Native Accuracy") +
   theme(
-    text=element_text(size=12), 
+    text=element_text(size=14), 
     axis.line = element_line(size = 0.6), 
-    axis.text.x = element_text(size=10,colour="black",
+    axis.text.x = element_text(size=12,colour="black",
                                angle = 13,
                                vjust = .5, 
                                hjust = 0.5), 
-    axis.text.y = element_text(size=10, colour='black'), 
+    axis.text.y = element_text(size=12, 
+                               colour='black'), 
     legend.title=element_blank())+
-  geom_hline(yintercept=c(0.5), linetype="dashed", colour="black", size=0.3)
+  geom_hline(yintercept=c(0.5), linetype="dashed", colour="black", size=0.3) 
 
+# ggsave('categories_accuracy.tiff', 
+#        device="tiff", 
+#        units="in",
+#        width=9.54,
+#        height=5.54, 
+#        dpi=300) 
 ```
 
-### Are blind and sighted controls better than chance at detemining the meaning of the presented foreing words? Is there any difference between the two groups?
+## Statistical analyses
 
-*We input main effect of semantic category and group and the interaction bewteen the two. We input as well random intercept by subject, item (each stimulus) and language (each language of the foreign words)
-
-### Native Accuracy
+### Prepare the data
 
 ```{r}
 
@@ -179,7 +198,11 @@ allData$session <- factor(allData$session)
 allData$language <- factor(allData$language)
 allData$stimulus <- factor(allData$stimulus)
 
+```
 
+### Experiment modality check (Matlab vs Gorilla)
+
+```{r}
 sessionResults <- glmer(nativeAccuracy ~ session +
         (1 | pseudoid) + (1 | language:stimulus), 
       data = allData,
@@ -190,8 +213,16 @@ summary(sessionResults)
 
 Anova(sessionResults)
   
-  
-  
+```
+
+### Category by Group interaction
+
+Are blind and sighted controls better than chance at detemining the meaning of the presented foreing words? Is there any difference between the two groups?
+
+*We input main effect of semantic category and group and the interaction bewteen the two. We input as well random intercept by subject, item (each stimulus) and language (each language of the foreign words)
+
+```{r}
+
 nativeResults <- glmer(nativeAccuracy ~ category + group + category*group +
         (1 | pseudoid) + (1 | language:stimulus), 
       data = allData,
@@ -211,6 +242,12 @@ tab <- cbind(Est = fixef(nativeResult),
 # print odd-ratio and confidence interval
 print(exp(tab[2:4,]), digits=3)
 
+```
+
+### Groups accuracy agaisnt chance
+
+```{r}
+
 native_EB <- subset(allData, group == 'EB')
 binom.test(sum(native_EB$grade), nrow(native_EB), p = .5)
 
@@ -219,21 +256,11 @@ binom.test(sum(native_SC$grade), nrow(native_SC), p = .5)
 ```
 
 
-## Post hoc analyses - Native accuracy
+## Post hoc analyses
 
 ### Category 1: size
 
 ```{r}
-
-cat1 = glmer(nativeAccuracy ~ group +
-        (1 | pseudoid) + (1 | language:stimulus),
-      subset(allData, category == 1),
-      family = binomial,
-      control=glmerControl(optimizer="bobyqa"))
-
-summary(cat1)
-
-Anova(cat1)
 
 catOne_EB <- subset(allData, category == 1 & group == 'EB')
 binom.test(sum(catOne_EB$grade), nrow(catOne_EB), p = .5)
@@ -248,16 +275,6 @@ binom.test(sum(catOne_SC$grade), nrow(catOne_SC), p = .5)
 
 ```{r}
 
-cat3 = glmer(nativeAccuracy ~ group +
-        (1 | pseudoid) + (1 | language:stimulus),
-      subset(allData, category == 3),
-      family = binomial,
-      control=glmerControl(optimizer="bobyqa"))
-
-summary(cat3)
-
-Anova(cat3)
-
 catThree_EB <- subset(allData, category == 3 & group == 'EB')
 binom.test(sum(catThree_EB$grade), nrow(catThree_EB), p = .5)
 
@@ -270,16 +287,6 @@ binom.test(sum(catThree_SC$grade), nrow(catThree_SC), p = .5)
 ### Category 4: loudness
 
 ```{r}
-
-cat4 = glmer(nativeAccuracy ~ group +
-        (1 | pseudoid) + (1 | language:stimulus),
-      subset(allData, category == 4),
-      family = binomial,
-      control=glmerControl(optimizer="bobyqa"))
-
-summary(cat4)
-
-Anova(cat4)
 
 catFour_EB <- subset(allData, category == 4 & group == 'EB')
 binom.test(sum(catFour_EB$grade), nrow(catFour_EB), p = .5)
@@ -294,16 +301,6 @@ binom.test(sum(catFour_SC$grade), nrow(catFour_SC), p = .5)
 
 ```{r}
 
-cat6 = glmer(nativeAccuracy ~ group +
-        (1 | pseudoid) + (1 | language:stimulus),
-      subset(allData, category == 6),
-      family = binomial,
-      control=glmerControl(optimizer="bobyqa"))
-
-summary(cat6)
-
-Anova(cat6)
-
 catSix_EB <- subset(allData, category == 6 & group == 'EB')
 binom.test(sum(catSix_EB$grade), nrow(catSix_EB), p = .5)
 
@@ -316,16 +313,6 @@ binom.test(sum(catSix_SC$grade), nrow(catSix_SC), p = .5)
 ### Category 7: movement
 
 ```{r}
-
-cat7 = glmer(nativeAccuracy ~ group +
-        (1 | pseudoid) + (1 | language:stimulus),
-      subset(allData, category == 7),
-      family = binomial,
-      control=glmerControl(optimizer="bobyqa"))
-
-summary(cat7)
-
-Anova(cat7)
 
 catSeven_EB <- subset(allData, category == 7 & group == 'EB')
 binom.test(sum(catSeven_EB$grade), nrow(catSeven_EB), p = .5)
@@ -340,16 +327,6 @@ binom.test(sum(catSeven_SC$grade), nrow(catSeven_SC), p = .5)
 
 ```{r}
 
-cat8 = glmer(nativeAccuracy ~ group +
-        (1 | pseudoid) + (1 | language:stimulus),
-      subset(allData, category == 8),
-      family = binomial,
-      control=glmerControl(optimizer="bobyqa"))
-
-summary(cat8)
-
-Anova(cat8)
-
 catEight_EB <- subset(allData, category == 8 & group == 'EB')
 binom.test(sum(catEight_EB$grade), nrow(catEight_EB), p = .5)
 
@@ -362,16 +339,6 @@ binom.test(sum(catEight_SC$grade), nrow(catEight_SC), p = .5)
 ### Category 9: distance
 
 ```{r}
-
-cat9 = glmer(nativeAccuracy ~ group +
-        (1 | pseudoid) + (1 | language:stimulus),
-      subset(allData, category == 9),
-      family = binomial,
-      control=glmerControl(optimizer="bobyqa"))
-
-summary(cat9)
-
-Anova(cat9)
 
 catNine_EB <- subset(allData, category == 9 & group == 'EB')
 binom.test(sum(catNine_EB$grade), nrow(catNine_EB), p = .5)
