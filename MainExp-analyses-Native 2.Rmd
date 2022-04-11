@@ -223,8 +223,8 @@ Are blind and sighted controls better than chance at detemining the meaning of t
 
 ```{r}
 
-nativeResults <- glmer(nativeAccuracy ~ category + group + category*group +
-        (1 | pseudoid) + (1 | language:stimulus), 
+nativeResults <- glmer(nativeAccuracy ~ session + category + group + session*category*group +
+        (1 + category | pseudoid) + (1 + category | language:stimulus), 
       data = allData,
       family = binomial,
       control = glmerControl(optimizer="bobyqa"))
@@ -234,13 +234,13 @@ summary(nativeResults)
 Anova(nativeResults)
 
 # calculate odd ratio and confidence intervals
-se <- sqrt(diag(vcov(nativeResult)))
-tab <- cbind(Est = fixef(nativeResult),
-             LL = fixef(nativeResult) - 1.96 * se,
-             UL = fixef(nativeResult) + 1.96 * se)
+se <- sqrt(diag(vcov(nativeResults)))
+tab <- cbind(Est = fixef(nativeResults),
+             LL = fixef(nativeResults) - 1.96 * se,
+             UL = fixef(nativeResults) + 1.96 * se)
 
 # print odd-ratio and confidence interval
-print(exp(tab[2:4,]), digits=3)
+print(exp(tab[]), digits=3)
 
 ```
 
@@ -347,4 +347,6 @@ catNine_SC <- subset(allData, category == 9 & group == 'SC')
 binom.test(sum(catNine_SC$grade), nrow(catNine_SC), p = .5)
 
 ```
+
+
 
