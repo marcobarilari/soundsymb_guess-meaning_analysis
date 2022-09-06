@@ -1,5 +1,5 @@
 ---
-title: "ADD HERE THE FINAL PAPER TITLE"
+title: "Early blindness does not impair the detection of sound symbolic associations in natural language"
 author: "Marco Barilari, Minah Chang and Roberto Bottini"
 output:
   pdf_document: default
@@ -20,7 +20,7 @@ if(length(new.packages)) install.packages(new.packages)
 lapply(list.of.packages, library, character.only = TRUE)
 
 # set script folder as working dir
-setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
+# setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
 
 # set to true to show the code chunk
 knitr::opts_chunk$set(echo = TRUE)
@@ -34,7 +34,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ### Load processed and merged data
 
-* 1. pseudoid - subject id 
+* 1. subID - subject id 
 * 2. group - 'EB' either early or congenital blind, 'SC' sighted controls
 * 3. session - it refers to the experiment version , either 'matlab' or 'gorilla'
 * 4. category [integers 1, 3, 4, 6, 7, 8, 9]
@@ -57,7 +57,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ```{r}
 
-allData<-read.csv("data/allData.csv", header = TRUE)
+allData<-read.csv("allData.csv", header = TRUE)
 
 ```
 
@@ -66,7 +66,7 @@ allData<-read.csv("data/allData.csv", header = TRUE)
 ```{r}
 
 allData %>% 
-  group_by(pseudoid, group, category) %>% 
+  group_by(subID, group, category) %>% 
   count() %>% 
   pivot_wider(names_from = category, values_from = n) %>% 
   print(n = 46)
@@ -98,7 +98,7 @@ allData %>%
 ```{r}
 
 categoryAccuracySubj_tidy <- allData %>%
-  group_by(pseudoid, group, category) %>%
+  group_by(subID, group, category) %>%
   summarize(rawAccuracy_mean = mean(rawAccuracy), nativeAccuracy_mean = mean(nativeAccuracy), 
             rawAccuracy_sd = sd(rawAccuracy), nativeAccuracy_sd = sd(nativeAccuracy),
             n = n(),
@@ -191,7 +191,7 @@ ggplot() +
 ```{r}
 
 summary(allData)
-allData$pseudoid <- factor(allData$pseudoid)
+allData$subID <- factor(allData$subID)
 allData$category <- factor(allData$category)
 allData$group <- factor(allData$group)
 allData$session <- factor(allData$session)
@@ -204,7 +204,7 @@ allData$stimulus <- factor(allData$stimulus)
 
 ```{r}
 sessionResults <- glmer(nativeAccuracy ~ session +
-        (1 | pseudoid) + (1 | language:stimulus), 
+        (1 | subID) + (1 | language:stimulus), 
       data = allData,
       family = binomial,
       control = glmerControl(optimizer="bobyqa"))
@@ -224,7 +224,7 @@ Are blind and sighted controls better than chance at detemining the meaning of t
 ```{r}
 
 nativeResults <- glmer(nativeAccuracy ~ session + category + group + session*category*group +
-        (1 + category | pseudoid) + (1 + category | language:stimulus), 
+        (1 + category | subID) + (1 + category | language:stimulus), 
       data = allData,
       family = binomial,
       control = glmerControl(optimizer="bobyqa"))
