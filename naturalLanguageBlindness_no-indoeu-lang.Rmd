@@ -1,0 +1,367 @@
+---
+title: "Early blindness does not impair the detection of sound symbolic associations in natural language"
+author: "Marco Barilari, Minah Chang and Roberto Bottini"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+# Load and install (if missing) the recquired packages
+list.of.packages <- c("tidyverse", 
+                      "knitr", 
+                      "reshape2", 
+                      "lme4",
+                      "nlme",
+                      "car")
+new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
+if(length(new.packages)) install.packages(new.packages)
+
+lapply(list.of.packages, library, character.only = TRUE)
+
+# set script folder as working dir
+# setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
+
+# set to true to show the code chunk
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Data Ananlysys for the paper "Early blindness does not impair the detection of sound symbolic associations in natural language" (under review)
+
+## Data preparation
+
+* All Distractor trials were removed (4186 values) and not considered for further analyses.
+
+### Load merged data
+
+* 1. subID - subject id 
+* 2. group - 'EB' either early or congenital blind, 'SC' sighted controls
+* 3. session - it refers to the experiment version , either 'matlab' or 'gorilla'
+* 4. category [integers 1, 2, 3, 4, 5, 6, 7]
+    + category 1: size
+    + category 2: brightness
+    + category 3: loudness
+    + category 4: velocity
+    + category 5: movement
+    + category 6: space
+    + category 7: distance
+* 5. wordcode - it refers to the identifier code of each stimulus, the code structure is speaker's gender + lamguage + xxx 
+* 6. language - language of origin of the stimulus
+* 7. stimulus - sound transcription of the stimulus
+* 8. meaning - meaning of the sitmulus refered the general synonim
+* 9. value -  'good' or 'good_op', see note below.
+* 10. response - participants response as generla synonim 
+* 11. grade - response coded as correct (1) or incorrect (0) compared to the 'meaning' column
+
+*Note about 'value' header (native accuracy): given that some words in specific native languages groups can "sound" with the opposite meaning as presented in Tzeng et al., (2017), we recompute the accuracy for those stimuli that in our prestudy were mapped systematically to the opposite meaning. For these subset of stimuli, we consider the response correct if it does not match the original meaning and incorrect if it does. The 9th column "value" indicates whether the accurcy should be calculated as the word's meaning (good), or the opposite meaning (good_op). Raw accuracy rate is calculated without taking into account the value of good or goodop.
+
+```{r}
+
+allData<-read.csv("allData.csv", header = TRUE)
+
+summary(allData$language)
+
+```
+
+## Descriptive analysis
+
+### Compute the over all raw and then native accuracy
+
+```{r}
+
+allData$rawAccuracy <- as.integer(allData$response == allData$meaning)
+
+allData$nativeAccuracy <- ifelse(allData$value == 'goodop', 
+                                 abs(allData$rawAccuracy - 1), 
+                                 allData$rawAccuracy + 0)
+allData %>%
+  group_by(group) %>%
+  summarize(native_acc = mean(nativeAccuracy), 
+            native_sd = sd((nativeAccuracy)),
+            .groups = 'keep')
+
+names(allData$language)
+
+allData$language <-  as.character(allData$language)
+
+allData <- subset(allData, language != "albanian")
+
+allData <- subset(allData, language != "dutch")
+
+allData <- subset(allData, language != "romanian")
+
+
+
+```
+
+
+### Accuracy per subjects and category 
+
+```{r}
+
+categoryAccuracySubj_tidy <- allData %>%
+  group_by(subID, group, category) %>%
+  summarize(nativeAccuracy_mean = mean(nativeAccuracy), 
+            nativeAccuracy_sd = sd(nativeAccuracy),
+            n = n(),
+            nativeAccuracy_se = nativeAccuracy_sd / sqrt(n),
+            .groups = 'keep')
+
+print(categoryAccuracySubj_tidy)
+
+```
+
+### Accuracy per group and category 
+
+```{r}
+
+categoryAccuracyGroup_tidy <- categoryAccuracySubj_tidy %>%
+  group_by(group, category) %>%
+  summarize(group_nativeAccuracy_mean = mean(nativeAccuracy_mean),
+            group_accuracy_sd = sd(nativeAccuracy_mean),
+            n = n(),
+            group_nativeAccuracy_se = group_accuracy_sd / sqrt(n),
+            .groups = 'keep')
+
+print(categoryAccuracyGroup_tidy)
+
+```
+
+### Plot of the native accuracy per category.
+
+```{r}
+
+ggplot() +
+  geom_jitter(data = categoryAccuracySubj_tidy, 
+              aes(x = as.factor(category), 
+                  y = nativeAccuracy_mean, 
+                  color = group),
+              position = position_jitterdodge(),
+              shape = 1,
+              size = 2.5,
+              stroke = 1,
+              alpha = .5,
+              show.legend = F) +
+  geom_errorbar(data = categoryAccuracyGroup_tidy,
+                aes(y = group_nativeAccuracy_mean,
+                    x = as.factor(category),
+                    ymin = group_nativeAccuracy_mean - group_nativeAccuracy_se,
+                    ymax = group_nativeAccuracy_mean + group_nativeAccuracy_se,
+                    color = group),
+                width = .08,
+                alpha = .6,
+                position = position_jitterdodge(0),
+                show.legend = F) +
+  geom_point(data = categoryAccuracyGroup_tidy,
+              aes(y = group_nativeAccuracy_mean,
+                  x = as.factor(category),
+                  color = group),
+              position = position_jitterdodge(0),
+              shape = 18,
+              size = 6,
+              alpha = .8) +
+  theme_classic() +
+  scale_color_manual(values=c('darkblue','darkorange1'), labels=c('Blind', 'Sighted')) +
+  scale_y_continuous(limits=c(0, 1), breaks=seq(0, 1, 0.10), expand = c(0,0)) +
+  scale_x_discrete(limits=c("1", "2", "3", "4", "5", "6", "7"),
+                   labels = c("size", "brightness", "loudness", "velocity", "movement", "space", "distance")) + 
+  labs(x="Categories", y="Accuracy") +
+  ggtitle("") +
+  theme(
+    text=element_text(size=14), 
+    axis.line = element_line(size = 0.6), 
+    axis.text.x = element_text(size=12,colour="black",
+                               angle = 13,
+                               vjust = .5, 
+                               hjust = 0.5), 
+    axis.text.y = element_text(size=12, 
+                               colour='black'), 
+    legend.title=element_blank())+
+  geom_hline(yintercept=c(0.5), linetype="dashed", colour="black", size=0.3) 
+
+# ggsave('categories_accuracy.tiff',
+#        device="tiff",
+#        units="in",
+#        width=7.54,
+#        height=4.54,
+#        dpi=300)
+```
+
+## Statistical analyses
+
+### Prepare the data
+
+```{r}
+
+summary(allData)
+allData$subID <- factor(allData$subID)
+allData$category <- factor(allData$category)
+allData$group <- factor(allData$group)
+allData$session <- factor(allData$session)
+allData$language <- factor(allData$language)
+allData$stimulus <- factor(allData$stimulus)
+
+```
+
+### Groups accuracy agaisnt chance
+
+```{r}
+
+native_EB <- subset(allData, group == 'EB')
+binom.test(sum(native_EB$grade), nrow(native_EB), p = .5)
+
+native_SC <- subset(allData, group == 'SC')
+binom.test(sum(native_SC$grade), nrow(native_SC), p = .5)
+```
+
+
+### Accuracy per category against chance
+
+#### Category 1: size
+
+```{r}
+
+catOne_EB <- subset(allData, category == 1 & group == 'EB')
+binom.test(sum(catOne_EB$grade), nrow(catOne_EB), p = .5)
+
+catOne_SC <- subset(allData, category == 1 & group == 'SC')
+binom.test(sum(catOne_SC$grade), nrow(catOne_SC), p = .5)
+
+```
+
+
+#### Category 2: brightness
+
+```{r}
+
+catThree_EB <- subset(allData, category == 2 & group == 'EB')
+binom.test(sum(catThree_EB$grade), nrow(catThree_EB), p = .5)
+
+catThree_SC <- subset(allData, category == 2 & group == 'SC')
+binom.test(sum(catThree_SC$grade), nrow(catThree_SC), p = .5)
+
+```
+
+
+#### Category 3: loudness
+
+```{r}
+
+catFour_EB <- subset(allData, category == 3 & group == 'EB')
+binom.test(sum(catFour_EB$grade), nrow(catFour_EB), p = .5)
+
+catFour_SC <- subset(allData, category == 3 & group == 'SC')
+binom.test(sum(catFour_SC$grade), nrow(catFour_SC), p = .5)
+
+```
+
+
+#### Category 4: velocity
+
+```{r}
+
+catSix_EB <- subset(allData, category == 4 & group == 'EB')
+binom.test(sum(catSix_EB$grade), nrow(catSix_EB), p = .5)
+
+catSix_SC <- subset(allData, category == 4 & group == 'SC')
+binom.test(sum(catSix_SC$grade), nrow(catSix_SC), p = .5)
+
+```
+
+
+#### Category 5: movement
+
+```{r}
+
+catSeven_EB <- subset(allData, category == 5 & group == 'EB')
+binom.test(sum(catSeven_EB$grade), nrow(catSeven_EB), p = .5)
+
+catSeven_SC <- subset(allData, category == 5 & group == 'SC')
+binom.test(sum(catSeven_SC$grade), nrow(catSeven_SC), p = .5)
+
+```
+
+
+#### Category 6: space
+
+```{r}
+
+catEight_EB <- subset(allData, category == 6 & group == 'EB')
+binom.test(sum(catEight_EB$grade), nrow(catEight_EB), p = .5)
+
+catEight_SC <- subset(allData, category == 6 & group == 'SC')
+binom.test(sum(catEight_SC$grade), nrow(catEight_SC), p = .5)
+
+```
+
+
+#### Category 7: distance
+
+```{r}
+
+catNine_EB <- subset(allData, category == 7 & group == 'EB')
+binom.test(sum(catNine_EB$grade), nrow(catNine_EB), p = .5)
+
+catNine_SC <- subset(allData, category == 7 & group == 'SC')
+binom.test(sum(catNine_SC$grade), nrow(catNine_SC), p = .5)
+
+```
+
+### Session by Category by Group interaction maximal model
+
+```{r}
+
+nativelModel <- glmer(nativeAccuracy ~ session + category + group + session*category*group +
+        (1 + category | subID) + (1 + category | language:stimulus), 
+      data = allData,
+      family = binomial,
+      control = glmerControl(optimizer="bobyqa"))
+
+summary(nativelModel)
+
+Anova(nativelModel)
+
+```
+
+## Analyses not considering those words that rquired inversion mapping
+
+```{r}
+allDataNoInversion <- subset(allData, value == 'good')
+
+allDataNoInversion$rawAccuracy <- as.integer(allDataNoInversion$response == allDataNoInversion$meaning)
+
+allDataNoInversion$nativeAccuracy <- ifelse(allDataNoInversion$value == 'goodop', 
+                                 abs(allDataNoInversion$rawAccuracy - 1), 
+                                 allDataNoInversion$rawAccuracy + 0)
+allDataNoInversion %>%
+  group_by(group) %>%
+  summarize(native_acc = mean(nativeAccuracy), 
+            .groups = 'keep')
+```
+
+### Groups accuracy against chance
+
+```{r}
+native_EB <- subset(allDataNoInversion, group == 'EB')
+binom.test(sum(native_EB$grade), nrow(native_EB), p = .5)
+
+native_SC <- subset(allDataNoInversion, group == 'SC')
+binom.test(sum(native_SC$grade), nrow(native_SC), p = .5)
+```
+
+### Session by Category by Group interaction maximal model on the subset of words that did not require inversion mapping
+
+```{r}
+
+nativelNoInversionModel <- glmer(nativeAccuracy ~ session + category + group + session*category*group +
+        (1 + category | subID) + (1 + category | language:stimulus), 
+      data = allDataNoInversion,
+      family = binomial,
+      control = glmerControl(optimizer="bobyqa"))
+
+summary(nativelNoInversionModel)
+
+Anova(nativelNoInversionModel)
+
+```
+
